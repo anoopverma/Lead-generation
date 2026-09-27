@@ -18,7 +18,10 @@ This repository tracks high-intent buying signals (hiring activity, RFPs, digita
   - **OpenCorporates API**: 100% free corporate registry legal status verification.
   - **SEC EDGAR API**: Free US government financial filings & public C-suite officer data.
   - **OpenWeb Ninja API**: Google Maps & local business website contact extraction.
-- **📊 Dynamic Lead Scoring Engine**: Ranks leads on a composite scale of `0-100` and assigns grades (`A+ Hot Opportunity`, `A High Priority`, `B`, `C`).
+- **📊 Dynamic Lead & Confidence Scoring Engine**:
+  - **Lead Score (0-100)**: Evaluates project budget, hiring urgency, and RFP value.
+  - **Confidence Score (0-100%)**: Measures data verification quality (verified email format from Hunter.io, legal registration status from OpenCorporates, active website tech stack footprint).
+  - **Confidence Filter (> 60%)**: Automatically filters out low-confidence leads below 60% verification threshold.
 - **✉️ Automated Outreach Pitch Generator**: Drafts personalized cold email subjects and body copy tailored specifically to the buying signal detected (RFP response, staff augmentation, stack audit).
 - **📁 Multi-Channel Data Export & Sync**: Exports lead lists directly to CSV and JSON, or syncs automatically to Salesforce CRM via Salesforce Web-to-Lead webhooks.
 - **🌐 Interactive Web Dashboard**: Includes a built-in dark-themed web GUI (`app.py`) for real-time lead monitoring and management.
@@ -36,28 +39,32 @@ To connect these Free Tier Scanning APIs directly to your Salesforce Org:
 
 ---
 
-## 🏗️ Project Architecture
+## 🏗️ Project Architecture (Strategy + Factory Design Patterns)
 
 ```
 /
 ├── CHANGES.md                 # Mandatory project changelog & edit history
 ├── README.md                  # Complete project documentation
-├── config.yaml                # Target roles, keywords, and scoring weights
+├── config.yaml                # Target roles, keywords, scoring & filtering settings
 ├── requirements.txt           # Python dependencies
-├── main.py                    # Interactive CLI runner
-├── app.py                     # Web Dashboard UI server
+├── main.py                    # Interactive CLI runner (uses Strategy & Factory patterns)
+├── app.py                     # Web Dashboard UI server (uses Strategy & Factory patterns)
 ├── src/
-│   ├── collectors/
-│   │   ├── job_signals.py     # Hiring signal collector for Salesforce roles
-│   │   ├── tech_detector.py   # Web tech stack scanner (Pardot, Web-to-Lead, LiveAgent)
-│   │   └── intent_finder.py   # Intent & RFP signal finder
-│   ├── processing/
-│   │   ├── lead_scorer.py     # Lead scoring algorithm
-│   │   └── outreach_generator.py # Cold email & pitch generator
-│   └── export/
-│       └── exporter.py        # CSV, JSON, and Web-to-Lead exporter
+│   ├── patterns/              # Design Patterns Architecture
+│   │   ├── strategies/        # Strategy Pattern implementations
+│   │   │   ├── base.py        # Abstract interfaces (ICollectorStrategy, IScoringStrategy, IExporterStrategy)
+│   │   │   ├── collector_strategies.py # Signal collection strategies
+│   │   │   ├── scoring_strategies.py   # DefaultWeighted & StrictVerification scoring strategies
+│   │   │   └── exporter_strategies.py  # CSV, JSON, Salesforce Web-to-Lead strategies
+│   │   └── factories/         # Factory Pattern implementations
+│   │       ├── collector_factory.py    # CollectorFactory for dynamic signal collectors
+│   │       ├── scoring_factory.py      # ScoringStrategyFactory for scoring strategies
+│   │       └── exporter_factory.py     # ExporterFactory for exporter strategies
+│   ├── collectors/            # Concrete collector engines (Job, Intent, Tech, Free Tier APIs)
+│   ├── processing/            # Lead scoring & pitch generator
+│   └── export/                # Exporters (CSV, JSON, Salesforce Web-to-Lead)
 └── tests/
-    └── test_lead_generation.py# Automated unit test suite
+    └── test_lead_generation.py# Automated unit test suite (8 passing tests)
 ```
 
 ---

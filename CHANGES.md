@@ -7,6 +7,28 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 ## [1.0.0] - 2026-09-27
 
 ### Added
+- **Design Patterns Architecture (`src/patterns/`)**:
+  - **Strategy Pattern (`src/patterns/strategies/`)**:
+    - `ICollectorStrategy`: Abstract Strategy interface for signal collectors (`JobSignalCollectorStrategy`, `IntentSignalCollectorStrategy`, `TechDetectorCollectorStrategy`, `FreeTierEnrichmentCollectorStrategy`).
+    - `IScoringStrategy`: Abstract Strategy interface for scoring and verification (`DefaultWeightedScoringStrategy`, `StrictVerificationScoringStrategy`).
+    - `IExporterStrategy`: Abstract Strategy interface for exporters (`CSVExporterStrategy`, `JSONExporterStrategy`, `SalesforceWebToLeadExporterStrategy`).
+  - **Factory Pattern (`src/patterns/factories/`)**:
+    - `CollectorFactory`: Instantiates collector strategies dynamically based on string type identifiers.
+    - `ScoringStrategyFactory`: Instantiates scoring strategies based on pipeline requirements.
+    - `ExporterFactory`: Instantiates exporter strategies for CSV, JSON, and Salesforce Web-to-Lead CRM sync.
+- **Refactored Entry Points**:
+  - Refactored [`main.py`](file:///Users/anoop/Project/Lead%20geneation/main.py) and [`app.py`](file:///Users/anoop/Project/Lead%20geneation/app.py) to decouple implementation using `CollectorFactory`, `ScoringStrategyFactory`, and `ExporterFactory`.
+- **Unit Test Suite**:
+  - Added `test_design_patterns_strategy_and_factory()` in `tests/test_lead_generation.py` (8/8 tests passing).
+- **Confidence Scoring & Filtering (> 60%) (`src/processing/lead_scorer.py`)**:
+  - Implemented explicit `confidence_score` calculation (0–100%) measuring data verification quality from free-tier APIs (Hunter.io verified email, OpenCorporates legal entity status, detected Salesforce web stack).
+  - Added confidence threshold filtering (`min_confidence_score: 60` in `config.yaml`), automatically discarding leads with confidence score <= 60%.
+- **Updated CLI & Dashboard**:
+  - `main.py`: Displays `Confidence Score: XX%` alongside `Lead Score: XX/100` and displays filtered count.
+  - `app.py`: Added visual `🛡️ XX% Verified` badge to the Web Dashboard.
+- **Export & Test Enhancements**:
+  - `exporter.py`: Added `confidence_score` column to CSV export.
+  - `tests/test_lead_generation.py`: Added `test_confidence_filtering()` unit test verifying filtering of leads with confidence <= 60%.
 - **Free-Tier Scanning & Enrichment APIs Module (`src/collectors/enrichment_apis.py`)**:
   - `Apollo.io API`: B2B profile & firmographics enrichment.
   - `Hunter.io API`: Email pattern discovery & domain verification.

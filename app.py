@@ -8,11 +8,7 @@ import http.server
 import socketserver
 import json
 import urllib.parse
-from src.collectors.job_signals import JobSignalCollector
-from src.collectors.tech_detector import TechDetectorCollector
-from src.collectors.intent_finder import IntentFinderCollector
-from src.collectors.enrichment_apis import FreeTierEnrichmentCollector
-from src.processing.lead_scorer import LeadScorer
+from src.patterns import CollectorFactory, ScoringStrategyFactory
 from src.processing.outreach_generator import OutreachGenerator
 
 PORT = 8000
@@ -191,6 +187,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 <tr>
                     <th>Company / Domain</th>
                     <th>Score & Grade</th>
+                    <th>Confidence Score</th>
                     <th>Signals & Intent</th>
                     <th>Detected Tech</th>
                     <th>Generated Pitch Preview</th>
@@ -221,6 +218,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                         <td>
                             <span class="badge-score ${lead.score >= 80 ? 'score-high' : 'score-med'}">
                                 ${lead.score}/100 • ${lead.grade}
+                            </span>
+                        </td>
+                        <td>
+                            <span style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6; padding: 4px 8px; border-radius: 12px; font-weight: 700; font-size: 0.85rem;">
+                                🛡️ ${lead.confidence_score}% Verified
                             </span>
                         </td>
                         <td>
@@ -256,21 +258,28 @@ class LeadGenDashboardHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.end_headers()
 
-            # Execute pipeline
-            job_leads = JobSignalCollector().search_job_signals()
-            intent_leads = IntentFinderCollector().find_intent_leads()
-            tech_collector = TechDetectorCollector()
-            enricher = FreeTierEnrichmentCollector()
+            # Execute pipeline via Strategy & Factory patterns
+            job_strategy = CollectorFactory.create_collector("job_signals")
+            intent_strategy = CollectorFactory.create_collector("intent_signals")
+            tech_strategy = CollectorFactory.create_collector("tech_detector")
+            enrichment_strategy = CollectorFactory.create_collector("enrichment")
 
-            for lead in job_leads + intent_leads:
-                enricher.enrich_lead_full(lead)
+            job_leads = job_strategy.collect()
+            intent_leads = intent_strategy.collect()
+            enrichment_strategy.collect(leads=job_leads + intent_leads)
 
             domains = list({l.get("domain") for l in job_leads + intent_leads if l.get("domain")})
-            tech_scans = [tech_collector.scan_domain(d) for d in domains]
+            tech_scans = tech_strategy.collect(domains=domains)
 
-            scored_leads = LeadScorer().score_and_merge_leads(job_leads, tech_scans, intent_leads)
+            scoring_strategy = ScoringStrategyFactory.create_scoring_strategy("default")
+            scored_leads = scoring_strategy.score_and_filter(
+                job_leads=job_leads,
+                tech_scans=tech_scans,
+                intent_leads=intent_leads,
+                min_confidence=60
+            )
+
             pitch_gen = OutreachGenerator()
-
             for lead in scored_leads:
                 lead["pitch"] = pitch_gen.generate_pitch(lead)
 

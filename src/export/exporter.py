@@ -24,7 +24,7 @@ class LeadExporter:
             return filepath
 
         fieldnames = [
-            "company_name", "domain", "score", "grade",
+            "company_name", "domain", "score", "confidence_score", "grade",
             "hiring_signal", "hiring_count", "intent_signal",
             "tech_footprint", "location", "contact_title"
         ]

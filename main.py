@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 """
-Salesforce Lead Generation Engine - Main CLI Interface
+Salesforce Lead Generation Engine - Refactored CLI Interface
+Uses Strategy Pattern + Factory Pattern for dynamic signal collection, scoring, and exporters.
 """
 
 import sys
 import yaml
 import os
-from src.collectors.job_signals import JobSignalCollector
-from src.collectors.tech_detector import TechDetectorCollector
-from src.collectors.intent_finder import IntentFinderCollector
-from src.collectors.enrichment_apis import FreeTierEnrichmentCollector
-from src.processing.lead_scorer import LeadScorer
+
+from src.patterns import CollectorFactory, ScoringStrategyFactory, ExporterFactory
 from src.processing.outreach_generator import OutreachGenerator
-from src.export.exporter import LeadExporter
 from src.utils.logger import get_logger
 
 logger = get_logger("MainCLI")
@@ -25,47 +22,51 @@ def load_config(config_path: str = "config.yaml") -> dict:
 
 def run_pipeline():
     print("=" * 70)
-    print("🚀 SALESFORCE LEAD GENERATION ENGINE - PROJECT FINDER 🚀")
+    print("🚀 SALESFORCE LEAD GENERATION ENGINE (Strategy & Factory Architecture) 🚀")
     print("=" * 70)
 
     config = load_config()
 
-    # 1. Collect Job Signals
-    print("\n[1/5] Collecting Salesforce Hiring Signals...")
-    job_collector = JobSignalCollector(roles=config.get("target_roles"))
-    job_leads = job_collector.search_job_signals()
+    # 1. Instantiate Collector Strategies using CollectorFactory
+    job_strategy = CollectorFactory.create_collector("job_signals", config=config)
+    intent_strategy = CollectorFactory.create_collector("intent_signals", config=config)
+    tech_strategy = CollectorFactory.create_collector("tech_detector", config=config)
+    enrichment_strategy = CollectorFactory.create_collector("enrichment", config=config)
 
-    # 2. Collect Intent & RFP Signals
-    print("\n[2/5] Searching for Salesforce RFPs & Digital Transformation Intent...")
-    intent_collector = IntentFinderCollector()
-    intent_leads = intent_collector.find_intent_leads()
+    # 2. Collect Signals via Strategies
+    print("\n[1/6] Collecting Salesforce Hiring Signals...")
+    job_leads = job_strategy.collect()
 
-    # 3. Detect Web Tech Stack Footprints
+    print("\n[2/6] Searching for Salesforce RFPs & Digital Transformation Intent...")
+    intent_leads = intent_strategy.collect()
+
     print("\n[3/6] Scanning Target Domains for Salesforce Footprints...")
-    tech_collector = TechDetectorCollector()
     domains_to_scan = list({l.get("domain") for l in job_leads + intent_leads if l.get("domain")})
-    tech_scans = [tech_collector.scan_domain(d) for d in domains_to_scan]
+    tech_scans = tech_strategy.collect(domains=domains_to_scan)
 
-    # 4. Enrich Leads using Free Tier APIs (Apollo, Hunter, OpenCorporates, SEC EDGAR)
     print("\n[4/6] Enriching Leads via Free-Tier B2B & Verification APIs...")
-    enricher = FreeTierEnrichmentCollector(config=config.get("free_tier_apis", {}))
-    for lead in job_leads + intent_leads:
-        enricher.enrich_lead_full(lead)
+    enrichment_strategy.collect(leads=job_leads + intent_leads)
 
-    # 5. Score & Prioritize Leads
-    print("\n[5/6] Scoring & Ranking Salesforce Project Leads...")
-    scorer = LeadScorer()
-    scored_leads = scorer.score_and_merge_leads(job_leads, tech_scans, intent_leads)
+    # 3. Score & Filter Leads using ScoringStrategyFactory
+    min_conf = config.get("filtering", {}).get("min_confidence_score", 60)
+    print(f"\n[5/6] Scoring & Filtering Leads (Strategy: DefaultWeighted, Min Confidence > {min_conf}%)...")
+    scoring_strategy = ScoringStrategyFactory.create_scoring_strategy("default", config=config)
+    scored_leads = scoring_strategy.score_and_filter(
+        job_leads=job_leads,
+        tech_scans=tech_scans,
+        intent_leads=intent_leads,
+        min_confidence=min_conf
+    )
 
-    # 5. Display Top Opportunities & Pitch Samples
+    # 4. Display Results
     print("\n" + "=" * 70)
-    print(f"🔥 DISCOVERED TOP {len(scored_leads)} SALESFORCE PROJECT LEADS 🔥")
+    print(f"🔥 DISCOVERED {len(scored_leads)} HIGH-CONFIDENCE SALESFORCE LEADS (> {min_conf}%) 🔥")
     print("=" * 70)
 
     pitch_gen = OutreachGenerator()
     for idx, lead in enumerate(scored_leads, start=1):
         print(f"\n#{idx} {lead['company_name']} ({lead['domain']})")
-        print(f"   Score: {lead['score']}/100 | Grade: {lead['grade']}")
+        print(f"   Lead Score: {lead['score']}/100 | Confidence Score: {lead['confidence_score']}% | Grade: {lead['grade']}")
         print(f"   Location: {lead['location']}")
         if lead.get('hiring_signal'):
             print(f"   Hiring Signal: {lead['hiring_signal']}")
@@ -79,13 +80,15 @@ def run_pipeline():
         print(f"   ✉️  Sample Pitch Subject: {pitch['subject']}")
         print(f"   --------------------------------------------------")
 
-    # 6. Export Results
-    print("\n[6/6] Exporting Leads...")
-    exporter = LeadExporter()
-    csv_file = exporter.export_to_csv(scored_leads)
-    json_file = exporter.export_to_json(scored_leads)
+    # 5. Export Leads using ExporterFactory
+    print("\n[6/6] Exporting Leads via ExporterFactory Strategies...")
+    csv_exporter = ExporterFactory.create_exporter("csv", config=config)
+    json_exporter = ExporterFactory.create_exporter("json", config=config)
 
-    print(f"\n✅ Pipeline Execution Completed!")
+    csv_file = csv_exporter.export(scored_leads)
+    json_file = json_exporter.export(scored_leads)
+
+    print(f"\n✅ Pipeline Execution Completed Successfully!")
     print(f"📁 CSV Export: {csv_file}")
     print(f"📁 JSON Export: {json_file}")
     print("=" * 70)

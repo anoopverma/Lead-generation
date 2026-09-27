@@ -37,6 +37,10 @@ scoring_weights:
   intent_news_match: 25
   enriched_contact_bonus: 15
 
+filtering:
+  min_confidence_score: 60
+  min_lead_score: 40
+
 export_settings:
   default_format: "csv"
   output_dir: "output"

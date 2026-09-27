@@ -5,22 +5,29 @@ logger = get_logger("LeadScorer")
 
 class LeadScorer:
     """
-    Evaluates and ranks Salesforce project leads based on multi-channel signals:
-    - Hiring Signal Weight (e.g. 40 points)
-    - Tech Stack Footprint Weight (e.g. 30 points)
-    - Buyer Intent / RFP Weight (e.g. 30 points)
+    Evaluates and ranks Salesforce project leads based on multi-channel signals and confidence verification:
+    - Lead Score (0-100): Buying intent & project value potential
+    - Confidence Score (0-100%): Signal verification, email deliverability, and legal entity validation
+    - Filters out low-confidence leads below threshold (default > 60%)
     """
+
+    def __init__(self, min_confidence_score: int = 60):
+        self.min_confidence_score = min_confidence_score
 
     def score_and_merge_leads(
         self,
         job_leads: List[Dict[str, Any]],
         tech_scans: List[Dict[str, Any]],
-        intent_leads: List[Dict[str, Any]]
+        intent_leads: List[Dict[str, Any]],
+        min_confidence: int = None
     ) -> List[Dict[str, Any]]:
         """
-        Merges multi-source signals by domain / company and assigns a consolidated lead score (0-100).
+        Merges multi-source signals by domain / company, computes lead score & confidence score,
+        and filters leads with confidence_score > min_confidence (default 60).
         """
-        logger.info("Merging lead sources and calculating Salesforce project lead scores...")
+        threshold = min_confidence if min_confidence is not None else self.min_confidence_score
+        logger.info(f"Merging lead sources, calculating confidence scores, and filtering for confidence > {threshold}%...")
+        
         lead_map: Dict[str, Dict[str, Any]] = {}
 
         # 1. Process Job Signals
@@ -37,6 +44,7 @@ class LeadScorer:
                 "location": lead.get("location", "N/A"),
                 "tech_footprint": [],
                 "intent_signal": None,
+                "enrichment": lead.get("enrichment", {}),
                 "score": 40 + min(lead.get("hiring_count", 1) * 5, 15)  # 40 - 55 pts for hiring
             }
 
@@ -57,6 +65,7 @@ class LeadScorer:
                     "intent_signal": lead["intent_signal"],
                     "budget": lead.get("estimated_budget", "Unknown"),
                     "contact_title": lead.get("contact_title", "VP of IT / Sales Ops"),
+                    "enrichment": lead.get("enrichment", {}),
                     "score": 50  # 50 pts for RFP/Intent signal
                 }
             else:
@@ -64,6 +73,8 @@ class LeadScorer:
                 lead_map[key]["budget"] = lead.get("estimated_budget", "Unknown")
                 lead_map[key]["contact_title"] = lead.get("contact_title", "VP of IT / Sales Ops")
                 lead_map[key]["score"] += 40  # Stack intent onto hiring
+                if not lead_map[key].get("enrichment") and lead.get("enrichment"):
+                    lead_map[key]["enrichment"] = lead.get("enrichment")
 
         # 3. Process Tech Stack Scans
         tech_map = {item["domain"]: item for item in tech_scans}
@@ -74,17 +85,31 @@ class LeadScorer:
                 lead["tech_footprint"] = techs
                 lead["score"] += 20 + min(len(techs) * 5, 10)  # Add points for existing SF tech
 
-        # 4. Account for Free-Tier Enrichment Signals (Apollo, Hunter, OpenCorporates)
+        # 4. Account for Free-Tier Enrichment & Calculate Confidence Score
         for key, lead in lead_map.items():
+            confidence = 50  # Base confidence for signal detection
             enrichment = lead.get("enrichment", {})
-            if enrichment.get("is_enriched"):
-                if enrichment.get("hunter_email", {}).get("emails_found"):
-                    lead["score"] += 10  # Bonus for verified email structure
-                if enrichment.get("opencorporates", {}).get("current_status") == "Active (Registered)":
-                    lead["score"] += 5   # Bonus for verified legal entity
 
-        # Convert to list and grade
+            # Email format verification (+20% confidence)
+            if enrichment.get("hunter_email", {}).get("emails_found"):
+                confidence += 20
+                lead["score"] += 10
+
+            # Legal Entity Registration status (+15% confidence)
+            if enrichment.get("opencorporates", {}).get("current_status") == "Active (Registered)":
+                confidence += 15
+                lead["score"] += 5
+
+            # Verified Tech Stack Footprint (+15% confidence)
+            if lead.get("tech_footprint"):
+                confidence += 15
+
+            lead["confidence_score"] = min(confidence, 100)
+
+        # 5. Grade and Filter by Confidence Score Threshold (> min_confidence)
         consolidated_leads = []
+        filtered_out_count = 0
+
         for lead in lead_map.values():
             final_score = min(lead["score"], 100)
             lead["score"] = final_score
@@ -98,9 +123,16 @@ class LeadScorer:
             else:
                 lead["grade"] = "C (Nurture)"
 
-            consolidated_leads.append(lead)
+            # Filter logic: confidence score must be strictly greater than threshold (default 60)
+            if lead["confidence_score"] > threshold:
+                consolidated_leads.append(lead)
+            else:
+                filtered_out_count += 1
 
         # Sort by highest score first
-        consolidated_leads.sort(key=lambda x: x["score"], reverse=True)
-        logger.info(f"Scored {len(consolidated_leads)} unique Salesforce project leads.")
+        consolidated_leads.sort(key=lambda x: (x["confidence_score"], x["score"]), reverse=True)
+        logger.info(
+            f"Scoring complete. Retained {len(consolidated_leads)} high-confidence leads (> {threshold}% confidence). "
+            f"Filtered out {filtered_out_count} low-confidence leads."
+        )
         return consolidated_leads

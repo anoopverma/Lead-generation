@@ -1,6 +1,7 @@
 import pytest
 import os
 import json
+from src.patterns import CollectorFactory, ScoringStrategyFactory, ExporterFactory
 from src.collectors.job_signals import JobSignalCollector
 from src.collectors.tech_detector import TechDetectorCollector
 from src.collectors.intent_finder import IntentFinderCollector
@@ -52,17 +53,34 @@ def test_lead_scorer_and_outreach():
     tech_collector = TechDetectorCollector()
     tech_scans = [tech_collector.scan_domain("acmehealthtech.example.com")]
 
-    scorer = LeadScorer()
+    scorer = LeadScorer(min_confidence_score=60)
     scored = scorer.score_and_merge_leads(job_leads, tech_scans, intent_leads)
 
     assert len(scored) > 0
     assert scored[0]["score"] >= 0
+    assert "confidence_score" in scored[0]
+    assert scored[0]["confidence_score"] > 60
     assert "grade" in scored[0]
 
     pitch_gen = OutreachGenerator()
     pitch = pitch_gen.generate_pitch(scored[0])
     assert "subject" in pitch
     assert "body" in pitch
+
+def test_confidence_filtering():
+    scorer = LeadScorer(min_confidence_score=60)
+    job_leads = [{
+        "company_name": "Low Conf Inc",
+        "domain": "lowconf.example.com",
+        "role_posted": "Salesforce Admin",
+        "hiring_count": 1
+    }]
+    tech_scans = []
+    intent_leads = []
+
+    # Unenriched lead has base confidence 50% <= 60%, so it should be filtered out
+    filtered_leads = scorer.score_and_merge_leads(job_leads, tech_scans, intent_leads, min_confidence=60)
+    assert len(filtered_leads) == 0
 
 def test_exporter(tmp_path):
     exporter = LeadExporter(output_dir=str(tmp_path))
@@ -81,3 +99,30 @@ def test_exporter(tmp_path):
 
     json_path = exporter.export_to_json(sample_leads, filename="test.json")
     assert os.path.exists(json_path)
+
+def test_design_patterns_strategy_and_factory(tmp_path):
+    # Test CollectorFactory
+    job_strat = CollectorFactory.create_collector("job_signals")
+    intent_strat = CollectorFactory.create_collector("intent_signals")
+    tech_strat = CollectorFactory.create_collector("tech_detector")
+    enrichment_strat = CollectorFactory.create_collector("enrichment")
+
+    job_leads = job_strat.collect()
+    intent_leads = intent_strat.collect()
+    enrichment_strat.collect(leads=job_leads + intent_leads)
+    tech_scans = tech_strat.collect(domains=["acme.example.com"])
+
+    assert len(job_leads) > 0
+    assert len(intent_leads) > 0
+    assert len(tech_scans) == 1
+
+    # Test ScoringStrategyFactory
+    scoring_strat = ScoringStrategyFactory.create_scoring_strategy("default")
+    scored = scoring_strat.score_and_filter(job_leads, tech_scans, intent_leads, min_confidence=60)
+    assert isinstance(scored, list)
+    assert len(scored) > 0
+
+    # Test ExporterFactory
+    csv_exp = ExporterFactory.create_exporter("csv", config={"export_settings": {"output_dir": str(tmp_path)}})
+    path = csv_exp.export(scored, filename="strat_test.csv")
+    assert os.path.exists(path)
