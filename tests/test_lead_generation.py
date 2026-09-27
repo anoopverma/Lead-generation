@@ -152,3 +152,23 @@ def test_freelance_marketplace_collector():
     freelance_strat = CollectorFactory.create_collector("freelance")
     strat_leads = freelance_strat.collect()
     assert len(strat_leads) > 0
+
+def test_github_linkedin_scrapers_and_strategies():
+    from src.collectors.linkedin_directory_scraper import LinkedInDirectoryScraperCollector
+    collector = LinkedInDirectoryScraperCollector()
+
+    dir_leads = collector.scrape_company_employee_directory("Acme Corp", "acmecorp.com")
+    assert isinstance(dir_leads, list)
+    assert len(dir_leads) > 0
+
+    seed_leads = collector.discover_similar_seed_leads("Salesforce Director")
+    assert isinstance(seed_leads, list)
+    assert len(seed_leads) > 0
+
+    dir_strat = CollectorFactory.create_collector("linkedin_directory")
+    res_dir = dir_strat.collect(leads=[{"company_name": "Test Co", "domain": "testco.com"}])
+    assert len(res_dir) > 0
+
+    seed_strat = CollectorFactory.create_collector("linkdapi")
+    res_seed = seed_strat.collect()
+    assert len(res_seed) > 0

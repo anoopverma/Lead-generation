@@ -7,6 +7,10 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 ## [1.0.0] - 2026-09-27
 
 ### Added
+- **GitHub LinkedIn Directory & LinkdAPI Strategies (`src/collectors/linkedin_directory_scraper.py`)**:
+  - Implemented `LinkedInDirectoryScraperCollector` & `LinkedInDirectoryScraperStrategy` inspired by **TufayelLUS/LinkedIn-Scraper** (Python Requests/BS4 directory scraping).
+  - Implemented `LinkdAPIDiscoverStrategy` inspired by **linkdAPI/linkedin-leads-discover** (Seed buyer profile mapping).
+  - Registered `"linkedin_directory"` and `"linkdapi"` in `CollectorFactory`.
 - **Freelance Marketplace Collector & Strategy (`src/collectors/freelance_marketplace.py`)**:
   - Implemented live scanning of **Upwork** and **Freelancer.com** project feeds for active Salesforce CPQ, Health Cloud, Apex, LWC, and CRM migration contracts.
   - Added `FreelanceMarketplaceCollectorStrategy` registered under keys `"freelance"`, `"upwork"`, `"freelancer"` in `CollectorFactory`.

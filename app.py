@@ -31,12 +31,14 @@ def run_project_scan() -> list:
     tech_strategy = CollectorFactory.create_collector("tech_detector")
     enrichment_strategy = CollectorFactory.create_collector("enrichment")
     linkedin_strategy = CollectorFactory.create_collector("linkedin")
+    linkdapi_strategy = CollectorFactory.create_collector("linkdapi")
     freelance_strategy = CollectorFactory.create_collector("freelance")
 
     job_leads = job_strategy.collect()
     intent_leads = intent_strategy.collect()
     freelance_leads = freelance_strategy.collect()
-    all_intent_leads = intent_leads + freelance_leads
+    seed_leads = linkdapi_strategy.collect()
+    all_intent_leads = intent_leads + freelance_leads + seed_leads
 
     enrichment_strategy.collect(leads=job_leads + all_intent_leads)
     linkedin_strategy.collect(leads=job_leads + all_intent_leads)
@@ -114,6 +116,7 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
 
 
 def run_server():
+    socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), SalesforceLeadAppHandler) as httpd:
         logger.info(f"🌐 Salesforce Lead Generation App active at: http://localhost:{PORT}")
         try:

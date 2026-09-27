@@ -33,22 +33,24 @@ def run_pipeline():
     tech_strategy = CollectorFactory.create_collector("tech_detector", config=config)
     enrichment_strategy = CollectorFactory.create_collector("enrichment", config=config)
     linkedin_strategy = CollectorFactory.create_collector("linkedin", config=config)
+    linkdapi_strategy = CollectorFactory.create_collector("linkdapi", config=config)
     freelance_strategy = CollectorFactory.create_collector("freelance", config=config)
 
     # 2. Collect Signals via Strategies
     print("\n[1/6] Collecting Salesforce Hiring Signals...")
     job_leads = job_strategy.collect()
 
-    print("\n[2/6] Searching for Salesforce RFPs, Upwork & Freelancer Marketplaces...")
+    print("\n[2/6] Searching for Salesforce RFPs, Upwork, Freelancer & LinkdAPI Seed Discoveries...")
     intent_leads = intent_strategy.collect()
     freelance_leads = freelance_strategy.collect()
-    all_intent_leads = intent_leads + freelance_leads
+    seed_leads = linkdapi_strategy.collect()
+    all_intent_leads = intent_leads + freelance_leads + seed_leads
 
     print("\n[3/6] Scanning Target Domains for Salesforce Footprints...")
     domains_to_scan = list({l.get("domain") for l in job_leads + all_intent_leads if l.get("domain")})
     tech_scans = tech_strategy.collect(domains=domains_to_scan)
 
-    print("\n[4/6] Enriching Leads via Free-Tier B2B, LinkedIn & Verification APIs...")
+    print("\n[4/6] Enriching Leads via Free-Tier B2B, LinkedIn Directory & Verification APIs...")
     enrichment_strategy.collect(leads=job_leads + all_intent_leads)
     linkedin_strategy.collect(leads=job_leads + all_intent_leads)
 

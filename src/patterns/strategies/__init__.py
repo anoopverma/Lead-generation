@@ -5,6 +5,8 @@ from .collector_strategies import (
     TechDetectorCollectorStrategy,
     FreeTierEnrichmentCollectorStrategy,
     LinkedInCollectorStrategy,
+    LinkedInDirectoryScraperStrategy,
+    LinkdAPIDiscoverStrategy,
     FreelanceMarketplaceCollectorStrategy
 )
 from .scoring_strategies import (
@@ -26,6 +28,8 @@ __all__ = [
     "TechDetectorCollectorStrategy",
     "FreeTierEnrichmentCollectorStrategy",
     "LinkedInCollectorStrategy",
+    "LinkedInDirectoryScraperStrategy",
+    "LinkdAPIDiscoverStrategy",
     "FreelanceMarketplaceCollectorStrategy",
     "DefaultWeightedScoringStrategy",
     "StrictVerificationScoringStrategy",

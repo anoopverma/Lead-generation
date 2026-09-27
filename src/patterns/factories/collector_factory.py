@@ -6,12 +6,15 @@ from ..strategies.collector_strategies import (
     TechDetectorCollectorStrategy,
     FreeTierEnrichmentCollectorStrategy,
     LinkedInCollectorStrategy,
+    LinkedInDirectoryScraperStrategy,
+    LinkdAPIDiscoverStrategy,
     FreelanceMarketplaceCollectorStrategy
 )
 
 class CollectorFactory:
     """
     Factory pattern class for creating signal and enrichment collector strategies.
+    Supports GitHub open-source LinkedIn scrapers & seed profile discovery engines.
     """
 
     @staticmethod
@@ -29,6 +32,10 @@ class CollectorFactory:
             return FreeTierEnrichmentCollectorStrategy(config=config.get("free_tier_apis"))
         elif ctype in ["linkedin", "linkedin_scanner", "social_profiles"]:
             return LinkedInCollectorStrategy(api_key=config.get("free_tier_apis", {}).get("linkedin_api_key"))
+        elif ctype in ["linkedin_directory", "tufayellus_scraper", "employee_directory"]:
+            return LinkedInDirectoryScraperStrategy(config=config)
+        elif ctype in ["linkdapi", "seed_discovery", "linkedin_discover"]:
+            return LinkdAPIDiscoverStrategy(config=config)
         elif ctype in ["freelance", "upwork", "freelancer", "marketplace"]:
             return FreelanceMarketplaceCollectorStrategy(keywords=config.get("intent_keywords"))
         else:

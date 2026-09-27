@@ -6,6 +6,7 @@ from ...collectors.tech_detector import TechDetectorCollector
 from ...collectors.enrichment_apis import FreeTierEnrichmentCollector
 from ...collectors.linkedin_scanner import LinkedInScannerCollector
 from ...collectors.freelance_marketplace import FreelanceMarketplaceCollector
+from ...collectors.linkedin_directory_scraper import LinkedInDirectoryScraperCollector
 
 class JobSignalCollectorStrategy(ICollectorStrategy):
     """Concrete Collector Strategy for Salesforce Job Hiring Signals."""
@@ -77,6 +78,39 @@ class LinkedInCollectorStrategy(ICollectorStrategy):
 
             results.append(info)
         return results
+
+
+class LinkedInDirectoryScraperStrategy(ICollectorStrategy):
+    """
+    Concrete Collector Strategy for Python Requests/BS4 LinkedIn Company Directory Scraping
+    Inspired by TufayelLUS/LinkedIn-Scraper.
+    """
+
+    def __init__(self, config: Dict[str, Any] = None):
+        self.collector = LinkedInDirectoryScraperCollector(config=config)
+
+    def collect(self, **kwargs) -> List[Dict[str, Any]]:
+        leads = kwargs.get("leads", [])
+        scraped_leads = []
+        for lead in leads:
+            company = lead.get("company_name", "")
+            domain = lead.get("domain", "")
+            scraped_leads.extend(self.collector.scrape_company_employee_directory(company, domain))
+        return scraped_leads
+
+
+class LinkdAPIDiscoverStrategy(ICollectorStrategy):
+    """
+    Concrete Collector Strategy for Seed Profile Discovery & Network Mapping
+    Inspired by linkdAPI/linkedin-leads-discover.
+    """
+
+    def __init__(self, config: Dict[str, Any] = None):
+        self.collector = LinkedInDirectoryScraperCollector(config=config)
+
+    def collect(self, **kwargs) -> List[Dict[str, Any]]:
+        seed_role = kwargs.get("seed_role", "Salesforce Director")
+        return self.collector.discover_similar_seed_leads(seed_profile_role=seed_role)
 
 
 class FreelanceMarketplaceCollectorStrategy(ICollectorStrategy):
