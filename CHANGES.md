@@ -7,6 +7,12 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 ## [1.0.0] - 2026-09-27
 
 ### Added / Updated
+- **Dynamic Real-Time Page Filters (`index.html`)**:
+  - Added live search bar (filters by company name, domain, project description, contact info).
+  - Added minimum confidence score dropdown selector (All Scores, >60%, >75%, >85%).
+  - Added Grade filter dropdown (All, A+, A, B, C).
+  - Added dynamic sorting controls (Confidence High to Low, Lead Score High to Low, Company A-Z).
+  - Added instant Reset Filters action button.
 - **UI Behavior (No Auto-Scan on Page Load)**:
   - Ensured `index.html` displays a clean initial state requiring the user to explicitly click the **`🔍 SCAN FOR PROJECTS`** button to trigger scanning and enrichment.
   - Test suite in `tests/test_lead_generation.py` updated and verified (11/11 tests passing).

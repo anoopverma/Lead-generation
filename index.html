@@ -212,6 +212,64 @@
             color: #cbd5e1;
             font-weight: 500;
         }
+
+        .filter-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .filter-input, .filter-select {
+            background: #090d16;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.6rem 0.9rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            border-color: var(--accent-sf);
+        }
+
+        .btn-clear {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-clear:hover {
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
@@ -259,6 +317,41 @@
             </div>
         </div>
 
+        <!-- Dynamic Filter Controls -->
+        <div class="filter-panel">
+            <div class="filter-group">
+                <span class="filter-label">🔎 Search:</span>
+                <input type="text" id="filter-search" class="filter-input" placeholder="Company, domain, keyword..." oninput="applyFilters()">
+
+                <span class="filter-label" style="margin-left: 0.5rem;">🛡️ Min Confidence:</span>
+                <select id="filter-confidence" class="filter-select" onchange="applyFilters()">
+                    <option value="0">All Scores (0%+)</option>
+                    <option value="60" selected>> 60% Verified</option>
+                    <option value="75">> 75% Verified</option>
+                    <option value="85">> 85% Verified</option>
+                </select>
+
+                <span class="filter-label" style="margin-left: 0.5rem;">⭐ Grade:</span>
+                <select id="filter-grade" class="filter-select" onchange="applyFilters()">
+                    <option value="ALL">All Grades</option>
+                    <option value="A+">A+ (Hot)</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                </select>
+
+                <span class="filter-label" style="margin-left: 0.5rem;">🔀 Sort By:</span>
+                <select id="sort-by" class="filter-select" onchange="applyFilters()">
+                    <option value="conf-desc">Confidence (High to Low)</option>
+                    <option value="score-desc">Lead Score (High to Low)</option>
+                    <option value="company-asc">Company Name (A-Z)</option>
+                </select>
+            </div>
+            <div>
+                <button class="btn-clear" onclick="resetFilters()">Reset Filters</button>
+            </div>
+        </div>
+
         <div class="leads-table-container">
             <table>
                 <thead>
@@ -284,6 +377,8 @@
     </div>
 
     <script>
+        let rawLeads = [];
+
         async function scanProjects() {
             const scanBtn = document.getElementById('btn-scan');
             const banner = document.getElementById('status-banner');
@@ -293,8 +388,8 @@
 
             try {
                 const response = await fetch('/api/scan', { method: 'POST' });
-                const data = await response.json();
-                renderLeads(data);
+                rawLeads = await response.json();
+                applyFilters();
             } catch (err) {
                 alert('Scanning failed: ' + err.message);
             } finally {
@@ -304,6 +399,45 @@
             }
         }
 
+        function applyFilters() {
+            if (!rawLeads || rawLeads.length === 0) return;
+
+            const searchTerm = document.getElementById('filter-search').value.toLowerCase().trim();
+            const minConf = parseInt(document.getElementById('filter-confidence').value, 10) || 0;
+            const gradeFilter = document.getElementById('filter-grade').value;
+            const sortBy = document.getElementById('sort-by').value;
+
+            let filtered = rawLeads.filter(lead => {
+                if (searchTerm) {
+                    const textToSearch = `${lead.company_name} ${lead.domain} ${lead.project_description || ''} ${lead.intent_signal || ''} ${lead.hiring_signal || ''} ${lead.contact_details || ''}`.toLowerCase();
+                    if (!textToSearch.includes(searchTerm)) return false;
+                }
+
+                if (lead.confidence_score < minConf) return false;
+
+                if (gradeFilter !== 'ALL' && lead.grade !== gradeFilter) return false;
+
+                return true;
+            });
+
+            filtered.sort((a, b) => {
+                if (sortBy === 'conf-desc') return (b.confidence_score || 0) - (a.confidence_score || 0);
+                if (sortBy === 'score-desc') return (b.score || 0) - (a.score || 0);
+                if (sortBy === 'company-asc') return (a.company_name || '').localeCompare(b.company_name || '');
+                return 0;
+            });
+
+            renderLeads(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-search').value = '';
+            document.getElementById('filter-confidence').value = '60';
+            document.getElementById('filter-grade').value = 'ALL';
+            document.getElementById('sort-by').value = 'conf-desc';
+            applyFilters();
+        }
+
         function renderLeads(leads) {
             document.getElementById('total-leads').innerText = leads.length;
             document.getElementById('verified-leads').innerText = leads.filter(l => l.confidence_score > 60).length;
@@ -311,7 +445,7 @@
 
             const tbody = document.getElementById('leads-body');
             if (!leads || leads.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">No leads match > 60% confidence filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">No leads match current filter criteria.</td></tr>`;
                 return;
             }
 
