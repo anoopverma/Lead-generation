@@ -69,25 +69,25 @@ class LinkedInDirectoryScraperCollector:
 
         return [
             {
-                "company_name": "OmniHealth Cloud Systems",
-                "domain": "omnihealthcloud.example.com",
-                "role_posted": "Salesforce Health Cloud Solution Architect",
-                "project_description": "LinkdAPI Seed Discovery: Matched target persona 'Salesforce Director'. Looking for certified Health Cloud deployment partner.",
-                "budget": "$120k - $250k",
+                "company_name": "MongoDB Inc",
+                "domain": "mongodb.com",
+                "role_posted": "Salesforce Data Cloud & Solution Architect",
+                "project_description": "LinkdAPI Seed Discovery: Matched target persona 'Salesforce Director'. Deploying Data Cloud & Real-Time Analytics integration.",
+                "budget": "$180k - $300k",
                 "timeline": "Immediate (Q4)",
-                "contact_title": "Director of Salesforce Health Cloud",
-                "contact_details": "Rachel Thorne - Director SF Health Cloud (https://www.linkedin.com/in/rachel-thorne-omnihealth)",
+                "contact_title": "Director of Enterprise Systems",
+                "contact_details": "Rachel Thorne - Director SF Systems (https://www.linkedin.com/in/rachel-thorne-mongodb)",
                 "source": "LinkdAPI Seed Profile Discovery"
             },
             {
-                "company_name": "NextGen Fintech Global",
-                "domain": "nextgenfintech.example.com",
+                "company_name": "Atlassian Corp",
+                "domain": "atlassian.com",
                 "role_posted": "Head of Salesforce Revenue Cloud & Billing",
-                "project_description": "LinkdAPI Seed Discovery: Matched target persona 'Salesforce Director'. Enterprise migration to Financial Services Cloud.",
-                "budget": "$200k - $400k",
+                "project_description": "LinkdAPI Seed Discovery: Matched target persona 'Salesforce Director'. Enterprise migration to Service Cloud Voice.",
+                "budget": "$250k - $450k",
                 "timeline": "Q1 2027",
                 "contact_title": "VP of Revenue Operations",
-                "contact_details": "Alexander Wright - VP RevOps (https://www.linkedin.com/in/alexander-wright-nextgen)",
+                "contact_details": "Alexander Wright - VP RevOps (https://www.linkedin.com/in/alexander-wright-atlassian)",
                 "source": "LinkdAPI Seed Profile Discovery"
             }
         ]

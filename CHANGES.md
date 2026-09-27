@@ -7,6 +7,9 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 ## [1.0.0] - 2026-09-27
 
 ### Added
+- **Real Live Data & Domain Validation**:
+  - Replaced all simulated/placeholder data with live real-time API feeds (Remotive Live Jobs API, Google News RSS RFP Feed, Freelancer.com Open API).
+  - Validated enterprise company domains (`telusdigital.com`, `mongodb.com`, `atlassian.com`, `docusign.com`, `snowflake.com`, `kobotoolbox.com`, `workday.com`).
 - **GitHub LinkedIn Directory & LinkdAPI Strategies (`src/collectors/linkedin_directory_scraper.py`)**:
   - Implemented `LinkedInDirectoryScraperCollector` & `LinkedInDirectoryScraperStrategy` inspired by **TufayelLUS/LinkedIn-Scraper** (Python Requests/BS4 directory scraping).
   - Implemented `LinkdAPIDiscoverStrategy` inspired by **linkdAPI/linkedin-leads-discover** (Seed buyer profile mapping).
