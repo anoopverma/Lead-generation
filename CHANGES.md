@@ -7,6 +7,12 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 ## [1.0.0] - 2026-09-27
 
 ### Added
+- **LinkedIn Scanner Collector & Strategy (`src/collectors/linkedin_scanner.py`)**:
+  - Implemented public LinkedIn executive search (`site:linkedin.com/in/` and RapidAPI Fresh LinkedIn free tier).
+  - Added `LinkedInCollectorStrategy` registered under key `"linkedin"` in `CollectorFactory`.
+  - Enriched contact details with LinkedIn profiles and company URLs in CLI, Web UI, and CSV export.
+- **Unit Test Suite**:
+  - Added `test_linkedin_scanner_and_strategy()` in `tests/test_lead_generation.py` (9/9 tests passing).
 - **Interactive Web App UI (`index.html`)**:
   - Created standalone rich HTML UI featuring **"🔍 SCAN FOR PROJECTS"** and **"📥 EXPORT TO CSV"** buttons.
   - Interactive status banner, live stats cards, glassmorphic layout, and dynamic table rendering.

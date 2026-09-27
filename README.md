@@ -12,6 +12,7 @@ This repository tracks high-intent buying signals (hiring activity, RFPs, digita
 - **🎯 Intent & RFP Scraping**: Finds companies issuing RFPs for Salesforce implementations, migrations (e.g., Hubspot/Microsoft Dynamics to Salesforce), or digital transformation rollouts.
 - **🔍 Domain Web Tech Stack Scanner**: Scans company websites for Salesforce digital footprints (*Pardot/Marketing Cloud, Salesforce Web-to-Lead forms, LiveAgent Chat, Experience Cloud/Communities*).
 - **🌐 Free-Tier Scanning & Enrichment APIs**:
+  - **LinkedIn Public Profile Scanner**: Scans B2B executive decision makers (Salesforce Directors, VPs of IT) and company profile URLs (`site:linkedin.com/in/` & RapidAPI free tier).
   - **Apollo.io API**: B2B profiles, company employee counts, and firmographic data (50 free credits/mo).
   - **Hunter.io API**: Verified email domain pattern discovery and email verification (50 free searches/mo).
   - **Lessie AI API**: Real-time multi-channel profile scanning.

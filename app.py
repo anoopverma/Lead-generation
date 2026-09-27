@@ -30,10 +30,12 @@ def run_project_scan() -> list:
     intent_strategy = CollectorFactory.create_collector("intent_signals")
     tech_strategy = CollectorFactory.create_collector("tech_detector")
     enrichment_strategy = CollectorFactory.create_collector("enrichment")
+    linkedin_strategy = CollectorFactory.create_collector("linkedin")
 
     job_leads = job_strategy.collect()
     intent_leads = intent_strategy.collect()
     enrichment_strategy.collect(leads=job_leads + intent_leads)
+    linkedin_strategy.collect(leads=job_leads + intent_leads)
 
     domains = list({l.get("domain") for l in job_leads + intent_leads if l.get("domain")})
     tech_scans = tech_strategy.collect(domains=domains)

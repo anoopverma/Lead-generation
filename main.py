@@ -32,6 +32,7 @@ def run_pipeline():
     intent_strategy = CollectorFactory.create_collector("intent_signals", config=config)
     tech_strategy = CollectorFactory.create_collector("tech_detector", config=config)
     enrichment_strategy = CollectorFactory.create_collector("enrichment", config=config)
+    linkedin_strategy = CollectorFactory.create_collector("linkedin", config=config)
 
     # 2. Collect Signals via Strategies
     print("\n[1/6] Collecting Salesforce Hiring Signals...")
@@ -44,8 +45,9 @@ def run_pipeline():
     domains_to_scan = list({l.get("domain") for l in job_leads + intent_leads if l.get("domain")})
     tech_scans = tech_strategy.collect(domains=domains_to_scan)
 
-    print("\n[4/6] Enriching Leads via Free-Tier B2B & Verification APIs...")
+    print("\n[4/6] Enriching Leads via Free-Tier B2B, LinkedIn & Verification APIs...")
     enrichment_strategy.collect(leads=job_leads + intent_leads)
+    linkedin_strategy.collect(leads=job_leads + intent_leads)
 
     # 3. Score & Filter Leads using ScoringStrategyFactory
     min_conf = config.get("filtering", {}).get("min_confidence_score", 60)

@@ -126,3 +126,16 @@ def test_design_patterns_strategy_and_factory(tmp_path):
     csv_exp = ExporterFactory.create_exporter("csv", config={"export_settings": {"output_dir": str(tmp_path)}})
     path = csv_exp.export(scored, filename="strat_test.csv")
     assert os.path.exists(path)
+
+def test_linkedin_scanner_and_strategy():
+    from src.collectors.linkedin_scanner import LinkedInScannerCollector
+    scanner = LinkedInScannerCollector()
+    res = scanner.search_linkedin_decision_makers("Acme Health", "acmehealth.com")
+    assert "decision_makers" in res
+    assert len(res["decision_makers"]) > 0
+
+    linkedin_strat = CollectorFactory.create_collector("linkedin")
+    sample_leads = [{"company_name": "Acme Tech", "domain": "acmetech.com"}]
+    collected = linkedin_strat.collect(leads=sample_leads)
+    assert len(collected) == 1
+    assert "linkedin_info" in sample_leads[0]
