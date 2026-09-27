@@ -139,3 +139,16 @@ def test_linkedin_scanner_and_strategy():
     collected = linkedin_strat.collect(leads=sample_leads)
     assert len(collected) == 1
     assert "linkedin_info" in sample_leads[0]
+
+def test_freelance_marketplace_collector():
+    from src.collectors.freelance_marketplace import FreelanceMarketplaceCollector
+    collector = FreelanceMarketplaceCollector()
+    leads = collector.collect_all_marketplace_leads()
+    assert isinstance(leads, list)
+    assert len(leads) > 0
+    assert "project_description" in leads[0]
+    assert "budget" in leads[0]
+
+    freelance_strat = CollectorFactory.create_collector("freelance")
+    strat_leads = freelance_strat.collect()
+    assert len(strat_leads) > 0

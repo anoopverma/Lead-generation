@@ -5,7 +5,8 @@ from ..strategies.collector_strategies import (
     IntentSignalCollectorStrategy,
     TechDetectorCollectorStrategy,
     FreeTierEnrichmentCollectorStrategy,
-    LinkedInCollectorStrategy
+    LinkedInCollectorStrategy,
+    FreelanceMarketplaceCollectorStrategy
 )
 
 class CollectorFactory:
@@ -28,5 +29,7 @@ class CollectorFactory:
             return FreeTierEnrichmentCollectorStrategy(config=config.get("free_tier_apis"))
         elif ctype in ["linkedin", "linkedin_scanner", "social_profiles"]:
             return LinkedInCollectorStrategy(api_key=config.get("free_tier_apis", {}).get("linkedin_api_key"))
+        elif ctype in ["freelance", "upwork", "freelancer", "marketplace"]:
+            return FreelanceMarketplaceCollectorStrategy(keywords=config.get("intent_keywords"))
         else:
             raise ValueError(f"Unknown collector strategy type: '{collector_type}'")

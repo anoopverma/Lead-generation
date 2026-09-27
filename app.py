@@ -31,20 +31,24 @@ def run_project_scan() -> list:
     tech_strategy = CollectorFactory.create_collector("tech_detector")
     enrichment_strategy = CollectorFactory.create_collector("enrichment")
     linkedin_strategy = CollectorFactory.create_collector("linkedin")
+    freelance_strategy = CollectorFactory.create_collector("freelance")
 
     job_leads = job_strategy.collect()
     intent_leads = intent_strategy.collect()
-    enrichment_strategy.collect(leads=job_leads + intent_leads)
-    linkedin_strategy.collect(leads=job_leads + intent_leads)
+    freelance_leads = freelance_strategy.collect()
+    all_intent_leads = intent_leads + freelance_leads
 
-    domains = list({l.get("domain") for l in job_leads + intent_leads if l.get("domain")})
+    enrichment_strategy.collect(leads=job_leads + all_intent_leads)
+    linkedin_strategy.collect(leads=job_leads + all_intent_leads)
+
+    domains = list({l.get("domain") for l in job_leads + all_intent_leads if l.get("domain")})
     tech_scans = tech_strategy.collect(domains=domains)
 
     scoring_strategy = ScoringStrategyFactory.create_scoring_strategy("default")
     scored_leads = scoring_strategy.score_and_filter(
         job_leads=job_leads,
         tech_scans=tech_scans,
-        intent_leads=intent_leads,
+        intent_leads=all_intent_leads,
         min_confidence=60
     )
 

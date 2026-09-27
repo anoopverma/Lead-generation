@@ -7,6 +7,9 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 ## [1.0.0] - 2026-09-27
 
 ### Added
+- **Freelance Marketplace Collector & Strategy (`src/collectors/freelance_marketplace.py`)**:
+  - Implemented live scanning of **Upwork** and **Freelancer.com** project feeds for active Salesforce CPQ, Health Cloud, Apex, LWC, and CRM migration contracts.
+  - Added `FreelanceMarketplaceCollectorStrategy` registered under keys `"freelance"`, `"upwork"`, `"freelancer"` in `CollectorFactory`.
 - **Verified Web Page Linking & Clickable Contacts (`index.html`)**:
   - Fully linked **`🔍 SCAN FOR PROJECTS`** (`POST /api/scan`) and **`📥 EXPORT TO CSV`** (`GET /api/export/csv`) buttons.
   - Formatted `Contact Details` column with clickable LinkedIn Profile links (`formatContactDetails`).

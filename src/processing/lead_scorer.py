@@ -54,11 +54,12 @@ class LeadScorer:
                 "score": 40 + min(lead.get("hiring_count", 1) * 5, 15)  # 40 - 55 pts for hiring
             }
 
-        # 2. Process Intent Signals
+        # 2. Process Intent & Freelance Marketplace Signals
         for lead in intent_leads:
             company = lead["company_name"]
             domain = lead.get("domain", "")
             key = domain or company.lower()
+            intent_text = lead.get("intent_signal") or lead.get("project_description", "Salesforce Consulting Project")
 
             if key not in lead_map:
                 lead_map[key] = {
@@ -66,24 +67,24 @@ class LeadScorer:
                     "domain": domain,
                     "hiring_signal": None,
                     "hiring_count": 0,
-                    "location": "N/A",
-                    "project_description": lead["intent_signal"],
-                    "timeline": lead.get("target_timeframe", "Q4 2026"),
-                    "budget": lead.get("estimated_budget", "$100k - $250k"),
-                    "contact_title": lead.get("contact_title", "VP of IT / Sales Operations"),
-                    "contact_details": f"{lead.get('contact_title', 'VP of IT')} (contact@{domain})",
+                    "location": lead.get("location", "N/A"),
+                    "project_description": intent_text,
+                    "timeline": lead.get("timeline") or lead.get("target_timeframe", "1-3 Months"),
+                    "budget": lead.get("budget") or lead.get("estimated_budget", "$50k - $150k"),
+                    "contact_title": lead.get("contact_title", "Project Owner"),
+                    "contact_details": lead.get("contact_details") or f"{lead.get('contact_title', 'Project Owner')} (contact@{domain})",
                     "tech_footprint": [],
-                    "intent_signal": lead["intent_signal"],
+                    "intent_signal": intent_text,
                     "enrichment": lead.get("enrichment", {}),
                     "score": 50  # 50 pts for RFP/Intent signal
                 }
             else:
-                lead_map[key]["intent_signal"] = lead["intent_signal"]
-                lead_map[key]["project_description"] = f"{lead_map[key]['project_description']} | RFP: {lead['intent_signal']}"
-                lead_map[key]["timeline"] = lead.get("target_timeframe", lead_map[key]["timeline"])
-                lead_map[key]["budget"] = lead.get("estimated_budget", lead_map[key]["budget"])
+                lead_map[key]["intent_signal"] = intent_text
+                lead_map[key]["project_description"] = f"{lead_map[key]['project_description']} | RFP: {intent_text}"
+                lead_map[key]["timeline"] = lead.get("timeline") or lead.get("target_timeframe", lead_map[key]["timeline"])
+                lead_map[key]["budget"] = lead.get("budget") or lead.get("estimated_budget", lead_map[key]["budget"])
                 lead_map[key]["contact_title"] = lead.get("contact_title", lead_map[key]["contact_title"])
-                lead_map[key]["contact_details"] = f"{lead_map[key]['contact_title']} (contact@{domain})"
+                lead_map[key]["contact_details"] = lead.get("contact_details") or f"{lead_map[key]['contact_title']} (contact@{domain})"
                 lead_map[key]["score"] += 40  # Stack intent onto hiring
                 if not lead_map[key].get("enrichment") and lead.get("enrichment"):
                     lead_map[key]["enrichment"] = lead.get("enrichment")

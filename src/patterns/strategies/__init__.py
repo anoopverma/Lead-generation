@@ -4,7 +4,8 @@ from .collector_strategies import (
     IntentSignalCollectorStrategy,
     TechDetectorCollectorStrategy,
     FreeTierEnrichmentCollectorStrategy,
-    LinkedInCollectorStrategy
+    LinkedInCollectorStrategy,
+    FreelanceMarketplaceCollectorStrategy
 )
 from .scoring_strategies import (
     DefaultWeightedScoringStrategy,
@@ -25,6 +26,7 @@ __all__ = [
     "TechDetectorCollectorStrategy",
     "FreeTierEnrichmentCollectorStrategy",
     "LinkedInCollectorStrategy",
+    "FreelanceMarketplaceCollectorStrategy",
     "DefaultWeightedScoringStrategy",
     "StrictVerificationScoringStrategy",
     "CSVExporterStrategy",

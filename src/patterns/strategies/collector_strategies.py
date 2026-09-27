@@ -5,6 +5,7 @@ from ...collectors.intent_finder import IntentFinderCollector
 from ...collectors.tech_detector import TechDetectorCollector
 from ...collectors.enrichment_apis import FreeTierEnrichmentCollector
 from ...collectors.linkedin_scanner import LinkedInScannerCollector
+from ...collectors.freelance_marketplace import FreelanceMarketplaceCollector
 
 class JobSignalCollectorStrategy(ICollectorStrategy):
     """Concrete Collector Strategy for Salesforce Job Hiring Signals."""
@@ -76,3 +77,13 @@ class LinkedInCollectorStrategy(ICollectorStrategy):
 
             results.append(info)
         return results
+
+
+class FreelanceMarketplaceCollectorStrategy(ICollectorStrategy):
+    """Concrete Collector Strategy for scanning Upwork & Freelancer.com project feeds."""
+
+    def __init__(self, keywords: List[str] = None):
+        self.collector = FreelanceMarketplaceCollector(keywords=keywords)
+
+    def collect(self, **kwargs) -> List[Dict[str, Any]]:
+        return self.collector.collect_all_marketplace_leads()
