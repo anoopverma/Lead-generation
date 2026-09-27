@@ -331,7 +331,9 @@
                         <span class="meta-pill" style="color: #34d399; border-color: #059669;">💰 ${lead.budget || '$100k+'}</span>
                     </td>
                     <td>
-                        <div class="contact-info">👤 ${lead.contact_details || lead.contact_title}</div>
+                        <div class="contact-info">
+                            👤 ${formatContactDetails(lead.contact_details || lead.contact_title)}
+                        </div>
                     </td>
                     <td>
                         <span class="badge-conf">🛡️ ${lead.confidence_score}% Verified</span>
@@ -341,6 +343,12 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function formatContactDetails(text) {
+            if (!text) return 'N/A';
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, url => `<a href="${url}" target="_blank" style="color:#38bdf8; text-decoration:underline;">LinkedIn Profile ↗</a>`);
         }
 
         function exportCSV() {

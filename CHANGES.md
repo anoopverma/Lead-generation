@@ -7,6 +7,9 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 ## [1.0.0] - 2026-09-27
 
 ### Added
+- **Verified Web Page Linking & Clickable Contacts (`index.html`)**:
+  - Fully linked **`🔍 SCAN FOR PROJECTS`** (`POST /api/scan`) and **`📥 EXPORT TO CSV`** (`GET /api/export/csv`) buttons.
+  - Formatted `Contact Details` column with clickable LinkedIn Profile links (`formatContactDetails`).
 - **LinkedIn Scanner Collector & Strategy (`src/collectors/linkedin_scanner.py`)**:
   - Implemented public LinkedIn executive search (`site:linkedin.com/in/` and RapidAPI Fresh LinkedIn free tier).
   - Added `LinkedInCollectorStrategy` registered under key `"linkedin"` in `CollectorFactory`.
