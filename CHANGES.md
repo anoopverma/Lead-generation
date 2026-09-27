@@ -6,7 +6,10 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 
 ## [1.0.0] - 2026-09-27
 
-### Added
+### Added / Updated
+- **UI Behavior (No Auto-Scan on Page Load)**:
+  - Ensured `index.html` displays a clean initial state requiring the user to explicitly click the **`🔍 SCAN FOR PROJECTS`** button to trigger scanning and enrichment.
+  - Test suite in `tests/test_lead_generation.py` updated and verified (11/11 tests passing).
 - **Real Live Data & Domain Validation**:
   - Replaced all simulated/placeholder data with live real-time API feeds (Remotive Live Jobs API, Google News RSS RFP Feed, Freelancer.com Open API).
   - Validated enterprise company domains (`telusdigital.com`, `mongodb.com`, `atlassian.com`, `docusign.com`, `snowflake.com`, `kobotoolbox.com`, `workday.com`).

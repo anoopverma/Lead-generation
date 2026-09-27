@@ -53,6 +53,10 @@ def test_lead_scorer_and_outreach():
     tech_collector = TechDetectorCollector()
     tech_scans = [tech_collector.scan_domain("acmehealthtech.example.com")]
 
+    enrichment_collector = FreeTierEnrichmentCollector()
+    for lead in job_leads:
+        enrichment_collector.enrich_lead_full(lead)
+
     scorer = LeadScorer(min_confidence_score=60)
     scored = scorer.score_and_merge_leads(job_leads, tech_scans, intent_leads)
 
