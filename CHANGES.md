@@ -7,6 +7,16 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 ## [1.0.0] - 2026-09-27
 
 ### Added
+- **Free-Tier Scanning & Enrichment APIs Module (`src/collectors/enrichment_apis.py`)**:
+  - `Apollo.io API`: B2B profile & firmographics enrichment.
+  - `Hunter.io API`: Email pattern discovery & domain verification.
+  - `Lessie AI API`: Real-time web profile scanner.
+  - `OpenCorporates API`: Corporate legal registry verification.
+  - `SEC EDGAR API`: Public financial filings & C-suite officer retrieval.
+  - `OpenWeb Ninja API`: Local business & domain contact extraction.
+- **Enhanced Lead Scoring**: Updated `lead_scorer.py` to boost scores for leads verified via Hunter.io email formats and OpenCorporates registration status.
+- **Salesforce Integration Documentation**: Added asynchronous Apex (`@future` / `Queueable`) and Salesforce Flow External Services guides to `README.md`.
+- **Unit Tests**: Added test coverage for `FreeTierEnrichmentCollector` in `tests/test_lead_generation.py`.
 - **Repository Initialized**: Local git repository created for `Salesforce Lead Generation Engine`.
 - **Project Structure**: Created modular directory architecture (`src/collectors`, `src/processing`, `src/export`, `src/utils`, `tests`).
 - **Core Signal Collectors**:

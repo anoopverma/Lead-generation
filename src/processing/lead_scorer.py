@@ -74,6 +74,15 @@ class LeadScorer:
                 lead["tech_footprint"] = techs
                 lead["score"] += 20 + min(len(techs) * 5, 10)  # Add points for existing SF tech
 
+        # 4. Account for Free-Tier Enrichment Signals (Apollo, Hunter, OpenCorporates)
+        for key, lead in lead_map.items():
+            enrichment = lead.get("enrichment", {})
+            if enrichment.get("is_enriched"):
+                if enrichment.get("hunter_email", {}).get("emails_found"):
+                    lead["score"] += 10  # Bonus for verified email structure
+                if enrichment.get("opencorporates", {}).get("current_status") == "Active (Registered)":
+                    lead["score"] += 5   # Bonus for verified legal entity
+
         # Convert to list and grade
         consolidated_leads = []
         for lead in lead_map.values():

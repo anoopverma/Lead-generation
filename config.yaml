@@ -22,10 +22,20 @@ tech_footprints:
   - "webtolead"
   - "liveagent"
 
+free_tier_apis:
+  apollo_api_key: ""
+  hunter_api_key: ""
+  lessie_api_key: ""
+  opencorporates_api_key: ""
+  enable_sec_edgar: true
+  enable_hunter: true
+  enable_apollo: true
+
 scoring_weights:
-  hiring_signal: 40
-  tech_stack_match: 30
-  intent_news_match: 30
+  hiring_signal: 35
+  tech_stack_match: 25
+  intent_news_match: 25
+  enriched_contact_bonus: 15
 
 export_settings:
   default_format: "csv"

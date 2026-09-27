@@ -9,6 +9,7 @@ import os
 from src.collectors.job_signals import JobSignalCollector
 from src.collectors.tech_detector import TechDetectorCollector
 from src.collectors.intent_finder import IntentFinderCollector
+from src.collectors.enrichment_apis import FreeTierEnrichmentCollector
 from src.processing.lead_scorer import LeadScorer
 from src.processing.outreach_generator import OutreachGenerator
 from src.export.exporter import LeadExporter
@@ -40,13 +41,19 @@ def run_pipeline():
     intent_leads = intent_collector.find_intent_leads()
 
     # 3. Detect Web Tech Stack Footprints
-    print("\n[3/5] Scanning Target Domains for Salesforce Footprints...")
+    print("\n[3/6] Scanning Target Domains for Salesforce Footprints...")
     tech_collector = TechDetectorCollector()
     domains_to_scan = list({l.get("domain") for l in job_leads + intent_leads if l.get("domain")})
     tech_scans = [tech_collector.scan_domain(d) for d in domains_to_scan]
 
-    # 4. Score & Prioritize Leads
-    print("\n[4/5] Scoring & Ranking Salesforce Project Leads...")
+    # 4. Enrich Leads using Free Tier APIs (Apollo, Hunter, OpenCorporates, SEC EDGAR)
+    print("\n[4/6] Enriching Leads via Free-Tier B2B & Verification APIs...")
+    enricher = FreeTierEnrichmentCollector(config=config.get("free_tier_apis", {}))
+    for lead in job_leads + intent_leads:
+        enricher.enrich_lead_full(lead)
+
+    # 5. Score & Prioritize Leads
+    print("\n[5/6] Scoring & Ranking Salesforce Project Leads...")
     scorer = LeadScorer()
     scored_leads = scorer.score_and_merge_leads(job_leads, tech_scans, intent_leads)
 
@@ -73,7 +80,7 @@ def run_pipeline():
         print(f"   --------------------------------------------------")
 
     # 6. Export Results
-    print("\n[5/5] Exporting Leads...")
+    print("\n[6/6] Exporting Leads...")
     exporter = LeadExporter()
     csv_file = exporter.export_to_csv(scored_leads)
     json_file = exporter.export_to_json(scored_leads)

@@ -11,10 +11,28 @@ This repository tracks high-intent buying signals (hiring activity, RFPs, digita
 - **💼 Job Board Hiring Signal Detection**: Automatically scans and identifies companies actively recruiting for Salesforce roles (*Salesforce Developer, Admin, CPQ Specialist, Solution Architect*), indicating urgent project staffing or consulting needs.
 - **🎯 Intent & RFP Scraping**: Finds companies issuing RFPs for Salesforce implementations, migrations (e.g., Hubspot/Microsoft Dynamics to Salesforce), or digital transformation rollouts.
 - **🔍 Domain Web Tech Stack Scanner**: Scans company websites for Salesforce digital footprints (*Pardot/Marketing Cloud, Salesforce Web-to-Lead forms, LiveAgent Chat, Experience Cloud/Communities*).
+- **🌐 Free-Tier Scanning & Enrichment APIs**:
+  - **Apollo.io API**: B2B profiles, company employee counts, and firmographic data (50 free credits/mo).
+  - **Hunter.io API**: Verified email domain pattern discovery and email verification (50 free searches/mo).
+  - **Lessie AI API**: Real-time multi-channel profile scanning.
+  - **OpenCorporates API**: 100% free corporate registry legal status verification.
+  - **SEC EDGAR API**: Free US government financial filings & public C-suite officer data.
+  - **OpenWeb Ninja API**: Google Maps & local business website contact extraction.
 - **📊 Dynamic Lead Scoring Engine**: Ranks leads on a composite scale of `0-100` and assigns grades (`A+ Hot Opportunity`, `A High Priority`, `B`, `C`).
 - **✉️ Automated Outreach Pitch Generator**: Drafts personalized cold email subjects and body copy tailored specifically to the buying signal detected (RFP response, staff augmentation, stack audit).
 - **📁 Multi-Channel Data Export & Sync**: Exports lead lists directly to CSV and JSON, or syncs automatically to Salesforce CRM via Salesforce Web-to-Lead webhooks.
 - **🌐 Interactive Web Dashboard**: Includes a built-in dark-themed web GUI (`app.py`) for real-time lead monitoring and management.
+
+---
+
+## ⚡ Salesforce Org Integration Patterns
+
+To connect these Free Tier Scanning APIs directly to your Salesforce Org:
+
+1. **Asynchronous Apex (@future / Queueable)**:
+   Avoid synchronous Apex triggers to prevent callout timeout errors. Use `@future(callout=true)` or `Queueable` Apex to scan and enrich incoming leads in background jobs.
+2. **Salesforce Flow + External Services**:
+   Import OpenAPI/Swagger specifications for Hunter.io or Apollo directly into **Salesforce External Services** to enrich leads natively inside Record-Triggered Flows without writing code.
 
 ---
 
