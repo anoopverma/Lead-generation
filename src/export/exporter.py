@@ -24,19 +24,25 @@ class LeadExporter:
             return filepath
 
         fieldnames = [
-            "company_name", "domain", "score", "confidence_score", "grade",
-            "hiring_signal", "hiring_count", "intent_signal",
-            "tech_footprint", "location", "contact_title"
+            "Company Name", "Domain", "Project Description", "Timeline",
+            "Budget", "Contact Details", "Confidence Score", "Lead Score", "Grade"
         ]
 
         with open(filepath, mode="w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             for lead in leads:
-                row = lead.copy()
-                if isinstance(row.get("tech_footprint"), list):
-                    row["tech_footprint"] = "; ".join(row["tech_footprint"])
-                writer.writerow(row)
+                writer.writerow({
+                    "Company Name": lead.get("company_name", ""),
+                    "Domain": lead.get("domain", ""),
+                    "Project Description": lead.get("project_description", lead.get("intent_signal") or lead.get("hiring_signal", "")),
+                    "Timeline": lead.get("timeline", "Immediate"),
+                    "Budget": lead.get("budget", "N/A"),
+                    "Contact Details": lead.get("contact_details", lead.get("contact_title", "")),
+                    "Confidence Score": f"{lead.get('confidence_score', 0)}%",
+                    "Lead Score": lead.get("score", 0),
+                    "Grade": lead.get("grade", "B")
+                })
 
         logger.info(f"Successfully exported {len(leads)} leads to CSV: {filepath}")
         return filepath

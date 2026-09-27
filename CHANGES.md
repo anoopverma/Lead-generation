@@ -7,6 +7,14 @@ All notable changes, features, bug fixes, and updates to the **Salesforce Lead G
 ## [1.0.0] - 2026-09-27
 
 ### Added
+- **Interactive Web App UI (`index.html`)**:
+  - Created standalone rich HTML UI featuring **"🔍 SCAN FOR PROJECTS"** and **"📥 EXPORT TO CSV"** buttons.
+  - Interactive status banner, live stats cards, glassmorphic layout, and dynamic table rendering.
+- **Enhanced CSV Export Schema (`src/export/exporter.py`)**:
+  - Configured CSV export to output exact required project fields: `Company Name`, `Domain`, `Project Description`, `Timeline`, `Budget`, `Contact Details`, `Confidence Score`, `Lead Score`, `Grade`.
+- **Web App API Endpoints (`app.py`)**:
+  - `POST /api/scan`: Triggers live project scanning, enrichment, and scoring pipeline using Strategy & Factory patterns.
+  - `GET /api/export/csv`: Generates and streams downloadable `salesforce_project_leads.csv` file directly to browser.
 - **Design Patterns Architecture (`src/patterns/`)**:
   - **Strategy Pattern (`src/patterns/strategies/`)**:
     - `ICollectorStrategy`: Abstract Strategy interface for signal collectors (`JobSignalCollectorStrategy`, `IntentSignalCollectorStrategy`, `TechDetectorCollectorStrategy`, `FreeTierEnrichmentCollectorStrategy`).

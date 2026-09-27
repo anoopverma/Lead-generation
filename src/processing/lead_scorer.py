@@ -23,6 +23,7 @@ class LeadScorer:
     ) -> List[Dict[str, Any]]:
         """
         Merges multi-source signals by domain / company, computes lead score & confidence score,
+        ensures standard fields (project_description, timeline, budget, contact_details, confidence_score),
         and filters leads with confidence_score > min_confidence (default 60).
         """
         threshold = min_confidence if min_confidence is not None else self.min_confidence_score
@@ -42,6 +43,11 @@ class LeadScorer:
                 "hiring_signal": lead["role_posted"],
                 "hiring_count": lead.get("hiring_count", 1),
                 "location": lead.get("location", "N/A"),
+                "project_description": f"Hiring {lead['role_posted']} ({lead.get('details', 'Salesforce Implementation & Support')})",
+                "timeline": "Immediate (Active Hiring)",
+                "budget": f"${lead.get('hiring_count', 1) * 60}k - ${lead.get('hiring_count', 1) * 120}k (Est.)",
+                "contact_title": f"Hiring Manager - {lead['role_posted']}",
+                "contact_details": f"Hiring Manager (contact@{domain})",
                 "tech_footprint": [],
                 "intent_signal": None,
                 "enrichment": lead.get("enrichment", {}),
@@ -61,17 +67,23 @@ class LeadScorer:
                     "hiring_signal": None,
                     "hiring_count": 0,
                     "location": "N/A",
+                    "project_description": lead["intent_signal"],
+                    "timeline": lead.get("target_timeframe", "Q4 2026"),
+                    "budget": lead.get("estimated_budget", "$100k - $250k"),
+                    "contact_title": lead.get("contact_title", "VP of IT / Sales Operations"),
+                    "contact_details": f"{lead.get('contact_title', 'VP of IT')} (contact@{domain})",
                     "tech_footprint": [],
                     "intent_signal": lead["intent_signal"],
-                    "budget": lead.get("estimated_budget", "Unknown"),
-                    "contact_title": lead.get("contact_title", "VP of IT / Sales Ops"),
                     "enrichment": lead.get("enrichment", {}),
                     "score": 50  # 50 pts for RFP/Intent signal
                 }
             else:
                 lead_map[key]["intent_signal"] = lead["intent_signal"]
-                lead_map[key]["budget"] = lead.get("estimated_budget", "Unknown")
-                lead_map[key]["contact_title"] = lead.get("contact_title", "VP of IT / Sales Ops")
+                lead_map[key]["project_description"] = f"{lead_map[key]['project_description']} | RFP: {lead['intent_signal']}"
+                lead_map[key]["timeline"] = lead.get("target_timeframe", lead_map[key]["timeline"])
+                lead_map[key]["budget"] = lead.get("estimated_budget", lead_map[key]["budget"])
+                lead_map[key]["contact_title"] = lead.get("contact_title", lead_map[key]["contact_title"])
+                lead_map[key]["contact_details"] = f"{lead_map[key]['contact_title']} (contact@{domain})"
                 lead_map[key]["score"] += 40  # Stack intent onto hiring
                 if not lead_map[key].get("enrichment") and lead.get("enrichment"):
                     lead_map[key]["enrichment"] = lead.get("enrichment")
@@ -91,9 +103,11 @@ class LeadScorer:
             enrichment = lead.get("enrichment", {})
 
             # Email format verification (+20% confidence)
-            if enrichment.get("hunter_email", {}).get("emails_found"):
+            emails = enrichment.get("hunter_email", {}).get("emails_found", [])
+            if emails:
                 confidence += 20
                 lead["score"] += 10
+                lead["contact_details"] = f"{lead.get('contact_title', 'Decision Maker')} ({emails[0]})"
 
             # Legal Entity Registration status (+15% confidence)
             if enrichment.get("opencorporates", {}).get("current_status") == "Active (Registered)":

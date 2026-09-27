@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce Lead Generation & Project Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --panel-bg: #131c2e;
+            --panel-hover: #1a263e;
+            --accent-sf: #00a1e0;
+            --accent-sf-gradient: linear-gradient(135deg, #00a1e0, #0052cc);
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-border: #24344d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--card-border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .logo-badge {
+            background: var(--accent-sf-gradient);
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0, 161, 224, 0.4);
+            letter-spacing: -0.02em;
+        }
+
+        h1 { font-size: 1.85rem; font-weight: 800; letter-spacing: -0.02em; }
+        p.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem; }
+
+        .actions-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: var(--accent-sf-gradient);
+            color: white;
+            border: none;
+            padding: 0.85rem 1.6rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: 0 4px 15px rgba(0, 161, 224, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 161, 224, 0.5);
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-export:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.4rem;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover { transform: translateY(-3px); }
+
+        .stat-val { font-size: 2.2rem; font-weight: 800; color: var(--accent-sf); margin-top: 0.5rem; }
+        .stat-lbl { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+
+        .status-banner {
+            background: rgba(0, 161, 224, 0.1);
+            border: 1px solid var(--accent-sf);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .leads-table-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--card-border); }
+        th { background: #0c1424; color: var(--text-muted); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        tr:hover { background: var(--panel-hover); }
+
+        .badge-conf {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid #10b981;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .badge-score {
+            background: rgba(0, 161, 224, 0.15);
+            color: #38bdf8;
+            border: 1px solid var(--accent-sf);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .project-desc {
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            line-height: 1.4;
+            max-width: 320px;
+        }
+
+        .meta-pill {
+            background: #1e293b;
+            color: #cbd5e1;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            border: 1px solid #334155;
+        }
+
+        .contact-info {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-title">
+                <div class="logo-badge">⚡ SF Lead Scanner</div>
+                <div>
+                    <h1>Salesforce Project Lead Intelligence</h1>
+                    <p class="subtitle">Scan buying signals, calculate confidence scores & export enriched project leads</p>
+                </div>
+            </div>
+            <div class="actions-group">
+                <button id="btn-scan" class="btn" onclick="scanProjects()">
+                    <span>🔍</span> SCAN FOR PROJECTS
+                </button>
+                <button id="btn-export" class="btn btn-export" onclick="exportCSV()">
+                    <span>📥</span> EXPORT TO CSV
+                </button>
+            </div>
+        </div>
+
+        <div id="status-banner" class="status-banner" style="display: none;">
+            <div class="spinner"></div>
+            <span id="status-text">Scanning hiring signals, RFPs, tech stacks and running free-tier enrichment APIs...</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-lbl">Active Scanned Projects</div>
+                <div class="stat-val" id="total-leads">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-lbl">Confidence Verified (> 60%)</div>
+                <div class="stat-val" style="color: #10b981;" id="verified-leads">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-lbl">Avg. Project Budget</div>
+                <div class="stat-val" style="color: #f59e0b;" id="avg-budget">$150k+</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-lbl">Hot Opportunities (A+)</div>
+                <div class="stat-val" style="color: #8b5cf6;" id="hot-opportunities">--</div>
+            </div>
+        </div>
+
+        <div class="leads-table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Company & Domain</th>
+                        <th>Project Description</th>
+                        <th>Timeline</th>
+                        <th>Budget</th>
+                        <th>Contact Details</th>
+                        <th>Confidence Score</th>
+                        <th>Lead Score</th>
+                    </tr>
+                </thead>
+                <tbody id="leads-body">
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                            Click <strong>"SCAN FOR PROJECTS"</strong> to execute live signal collection & enrichment.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function scanProjects() {
+            const scanBtn = document.getElementById('btn-scan');
+            const banner = document.getElementById('status-banner');
+            scanBtn.disabled = true;
+            scanBtn.innerHTML = '<div class="spinner"></div> Scanning...';
+            banner.style.display = 'flex';
+
+            try {
+                const response = await fetch('/api/scan', { method: 'POST' });
+                const data = await response.json();
+                renderLeads(data);
+            } catch (err) {
+                alert('Scanning failed: ' + err.message);
+            } finally {
+                scanBtn.disabled = false;
+                scanBtn.innerHTML = '<span>🔍</span> SCAN FOR PROJECTS';
+                banner.style.display = 'none';
+            }
+        }
+
+        function renderLeads(leads) {
+            document.getElementById('total-leads').innerText = leads.length;
+            document.getElementById('verified-leads').innerText = leads.filter(l => l.confidence_score > 60).length;
+            document.getElementById('hot-opportunities').innerText = leads.filter(l => l.score >= 85).length;
+
+            const tbody = document.getElementById('leads-body');
+            if (!leads || leads.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">No leads match > 60% confidence filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = leads.map(lead => `
+                <tr>
+                    <td>
+                        <strong>${lead.company_name}</strong><br>
+                        <span style="color: var(--accent-sf); font-size: 0.85rem;">${lead.domain}</span>
+                    </td>
+                    <td>
+                        <div class="project-desc">${lead.project_description || lead.intent_signal || lead.hiring_signal}</div>
+                    </td>
+                    <td>
+                        <span class="meta-pill">⏱️ ${lead.timeline || 'Immediate'}</span>
+                    </td>
+                    <td>
+                        <span class="meta-pill" style="color: #34d399; border-color: #059669;">💰 ${lead.budget || '$100k+'}</span>
+                    </td>
+                    <td>
+                        <div class="contact-info">👤 ${lead.contact_details || lead.contact_title}</div>
+                    </td>
+                    <td>
+                        <span class="badge-conf">🛡️ ${lead.confidence_score}% Verified</span>
+                    </td>
+                    <td>
+                        <span class="badge-score">${lead.score}/100 • ${lead.grade}</span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function exportCSV() {
+            window.location.href = '/api/export/csv';
+        }
+
+        // Auto scan on load
+        window.addEventListener('DOMContentLoaded', scanProjects);
+    </script>
+</body>
+</html>
