@@ -1,0 +1,34 @@
+target_roles:
+  - "Salesforce Administrator"
+  - "Salesforce Developer"
+  - "Salesforce Consultant"
+  - "Salesforce Architect"
+  - "CPQ Specialist"
+  - "Marketing Cloud Specialist"
+
+intent_keywords:
+  - "Salesforce implementation"
+  - "Salesforce migration"
+  - "Salesforce consulting RFP"
+  - "Salesforce digital transformation"
+  - "Salesforce integration"
+  - "CRM migration to Salesforce"
+
+tech_footprints:
+  - "salesforce.com"
+  - "force.com"
+  - "pardot.com"
+  - "exacttarget.com"
+  - "webtolead"
+  - "liveagent"
+
+scoring_weights:
+  hiring_signal: 40
+  tech_stack_match: 30
+  intent_news_match: 30
+
+export_settings:
+  default_format: "csv"
+  output_dir: "output"
+  salesforce_web_to_lead_url: ""
+  oid: ""
