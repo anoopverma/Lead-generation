@@ -2,6 +2,8 @@
 """
 Salesforce & Local Business Website Lead Generation Engine - Web Application Server
 Serves index.html (Salesforce Enterprise Leads) & website_leads.html (Google Maps Local Business Leads).
+Caches scanned leads in local JSON files (output/salesforce_scanned_leads.json & output/google_maps_scanned_leads.json).
+Loads instantly from local file unless a fresh rescan is explicitly requested.
 Runs on http://localhost:8000
 """
 
@@ -18,14 +20,33 @@ from src.utils.logger import get_logger
 logger = get_logger("WebAppServer")
 PORT = 8000
 
-# Global cached lead stores for fast web interaction
+# Cache file paths
+SALESFORCE_CACHE_PATH = os.path.join("output", "salesforce_scanned_leads.json")
+WEBSITE_CACHE_PATH = os.path.join("output", "google_maps_scanned_leads.json")
+
+# Global cached lead stores for fast in-memory web interaction
 SCANNED_LEADS = []
 SCANNED_WEBSITE_LEADS = []
 
-def run_project_scan() -> list:
-    """Executes full Salesforce scan, enrichment, and scoring via Strategy & Factory patterns."""
+def run_project_scan(force: bool = False) -> list:
+    """
+    Executes Salesforce project scan via Strategy & Factory patterns.
+    If force is False and local JSON cache file exists, loads and serves instantly from file.
+    Otherwise performs full live scan and caches results to local JSON file.
+    """
     global SCANNED_LEADS
-    logger.info("Executing Salesforce project scan via Collector & Scoring Factories...")
+
+    if not force and os.path.exists(SALESFORCE_CACHE_PATH):
+        try:
+            logger.info(f"⚡ Loading Salesforce project leads instantly from local JSON file ({SALESFORCE_CACHE_PATH})...")
+            with open(SALESFORCE_CACHE_PATH, "r", encoding="utf-8") as f:
+                SCANNED_LEADS = json.load(f)
+            logger.info(f"Loaded {len(SCANNED_LEADS)} cached leads instantly from local JSON file.")
+            return SCANNED_LEADS
+        except Exception as e:
+            logger.warning(f"Failed to read local JSON cache file: {e}. Running fresh live scan...")
+
+    logger.info("Executing fresh live Salesforce project scan via Collector & Scoring Factories...")
 
     job_strategy = CollectorFactory.create_collector("job_signals")
     intent_strategy = CollectorFactory.create_collector("intent_signals")
@@ -60,14 +81,38 @@ def run_project_scan() -> list:
         lead["pitch"] = pitch_gen.generate_pitch(lead)
 
     SCANNED_LEADS = scored_leads
-    logger.info(f"Scan complete. Retained {len(SCANNED_LEADS)} verified leads.")
+
+    # Save results to local JSON cache file
+    try:
+        os.makedirs("output", exist_ok=True)
+        with open(SALESFORCE_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(SCANNED_LEADS, f, indent=2)
+        logger.info(f"Saved {len(SCANNED_LEADS)} scanned leads to local JSON cache file ({SALESFORCE_CACHE_PATH}).")
+    except Exception as e:
+        logger.warning(f"Could not save JSON cache file: {e}")
+
     return SCANNED_LEADS
 
 
-def run_website_scan() -> list:
-    """Executes Google Maps local business website lead scan & scoring via Strategy & Factory patterns."""
+def run_website_scan(force: bool = False) -> list:
+    """
+    Executes Google Maps local business website lead scan & scoring via Strategy & Factory patterns.
+    If force is False and local JSON cache file exists, loads and serves instantly from file.
+    Otherwise performs full live scan and caches results to local JSON file.
+    """
     global SCANNED_WEBSITE_LEADS
-    logger.info("Executing Google Maps local business scan via Collector & Scoring Factories...")
+
+    if not force and os.path.exists(WEBSITE_CACHE_PATH):
+        try:
+            logger.info(f"⚡ Loading Google Maps website leads instantly from local JSON file ({WEBSITE_CACHE_PATH})...")
+            with open(WEBSITE_CACHE_PATH, "r", encoding="utf-8") as f:
+                SCANNED_WEBSITE_LEADS = json.load(f)
+            logger.info(f"Loaded {len(SCANNED_WEBSITE_LEADS)} cached website leads instantly from local JSON file.")
+            return SCANNED_WEBSITE_LEADS
+        except Exception as e:
+            logger.warning(f"Failed to read local website cache JSON file: {e}. Running fresh live scan...")
+
+    logger.info("Executing fresh live Google Maps scan via Collector & Scoring Factories...")
 
     gmaps_strategy = CollectorFactory.create_collector("google_maps")
     gmaps_leads = gmaps_strategy.collect()
@@ -85,13 +130,25 @@ def run_website_scan() -> list:
         lead["pitch"] = pitch_gen.generate_pitch(lead)
 
     SCANNED_WEBSITE_LEADS = scored_leads
-    logger.info(f"Google Maps scan complete. Retained {len(SCANNED_WEBSITE_LEADS)} verified website leads.")
+
+    # Save results to local JSON cache file
+    try:
+        os.makedirs("output", exist_ok=True)
+        with open(WEBSITE_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(SCANNED_WEBSITE_LEADS, f, indent=2)
+        logger.info(f"Saved {len(SCANNED_WEBSITE_LEADS)} website leads to local JSON cache file ({WEBSITE_CACHE_PATH}).")
+    except Exception as e:
+        logger.warning(f"Could not save website JSON cache file: {e}")
+
     return SCANNED_WEBSITE_LEADS
 
 
 class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
-        url_path = urllib.parse.urlparse(self.path).path
+        parsed_url = urllib.parse.urlparse(self.path)
+        url_path = parsed_url.path
+        query_params = urllib.parse.parse_qs(parsed_url.query)
+        force_scan = query_params.get("force", ["false"])[0].lower() in ["true", "1", "yes"]
 
         if url_path in ["/", "/index.html"]:
             self.send_response(200)
@@ -108,14 +165,14 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(f.read())
 
         elif url_path in ["/api/scan", "/api/leads"]:
-            leads = run_project_scan()
+            leads = run_project_scan(force=force_scan)
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(leads).encode("utf-8"))
 
         elif url_path in ["/api/scan/website", "/api/website-leads"]:
-            leads = run_website_scan()
+            leads = run_website_scan(force=force_scan)
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
@@ -124,7 +181,7 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
         elif url_path in ["/api/export/csv", "/export"]:
             global SCANNED_LEADS
             if not SCANNED_LEADS:
-                SCANNED_LEADS = run_project_scan()
+                SCANNED_LEADS = run_project_scan(force=False)
 
             csv_exporter = ExporterFactory.create_exporter("csv")
             filepath = csv_exporter.export(SCANNED_LEADS, filename="salesforce_project_leads.csv")
@@ -142,7 +199,7 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
         elif url_path in ["/api/export/website-csv"]:
             global SCANNED_WEBSITE_LEADS
             if not SCANNED_WEBSITE_LEADS:
-                SCANNED_WEBSITE_LEADS = run_website_scan()
+                SCANNED_WEBSITE_LEADS = run_website_scan(force=False)
 
             csv_exporter = ExporterFactory.create_exporter("csv")
             filepath = csv_exporter.export(SCANNED_WEBSITE_LEADS, filename="google_maps_website_leads.csv")
@@ -159,7 +216,7 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
 
         elif url_path in ["/api/export/website-excel", "/api/export/excel"]:
             if not SCANNED_WEBSITE_LEADS:
-                SCANNED_WEBSITE_LEADS = run_website_scan()
+                SCANNED_WEBSITE_LEADS = run_website_scan(force=False)
 
             excel_exporter = ExporterFactory.create_exporter("excel")
             filepath = excel_exporter.export(SCANNED_WEBSITE_LEADS, filename="google_maps_website_leads.xls")
@@ -178,16 +235,29 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404, "Page Not Found")
 
     def do_POST(self):
-        url_path = urllib.parse.urlparse(self.path).path
+        parsed_url = urllib.parse.urlparse(self.path)
+        url_path = parsed_url.path
+        query_params = urllib.parse.parse_qs(parsed_url.query)
+
+        force_scan = query_params.get("force", ["false"])[0].lower() in ["true", "1", "yes"]
+
+        content_length = int(self.headers.get("Content-Length", 0))
+        if content_length > 0:
+            try:
+                body = json.loads(self.rfile.read(content_length).decode("utf-8"))
+                if body.get("force") or body.get("fresh") or body.get("force_rescan"):
+                    force_scan = True
+            except Exception:
+                pass
 
         if url_path == "/api/scan":
-            leads = run_project_scan()
+            leads = run_project_scan(force=force_scan)
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(leads).encode("utf-8"))
         elif url_path == "/api/scan/website":
-            leads = run_website_scan()
+            leads = run_website_scan(force=force_scan)
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
@@ -209,3 +279,4 @@ def run_server():
 
 if __name__ == "__main__":
     run_server()
+

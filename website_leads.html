@@ -474,8 +474,11 @@
                 </div>
             </div>
             <div class="actions-group">
-                <button id="btn-scan" class="btn" onclick="scanWebsiteLeads()">
-                    <span>🔍</span> SCAN MAPS PROSPECTS (200+)
+                <button id="btn-scan" class="btn" onclick="scanWebsiteLeads(false)" title="Loads website leads instantly from local JSON cache file">
+                    <span>⚡</span> LOAD SAVED LEADS (FAST)
+                </button>
+                <button id="btn-fresh-scan" class="btn" style="background: linear-gradient(135deg, #ec4899, #be185d); box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);" onclick="scanWebsiteLeads(true)" title="Forces fresh live scan across Google Maps directories and saves to local JSON cache file">
+                    <span>🔄</span> FRESH RESCAN
                 </button>
                 <button id="btn-export-csv" class="btn btn-export" onclick="exportWebsiteCSV()">
                     <span>📥</span> EXPORT CSV
@@ -612,25 +615,44 @@
         let currentSortColumn = 'rating';
         let currentSortAsc = false;
 
-        async function scanWebsiteLeads() {
+        async function scanWebsiteLeads(force = false) {
             const scanBtn = document.getElementById('btn-scan');
+            const freshBtn = document.getElementById('btn-fresh-scan');
             const banner = document.getElementById('status-banner');
+            const statusText = document.getElementById('status-text');
+
             scanBtn.disabled = true;
-            scanBtn.innerHTML = '<div class="spinner"></div> Scanning 200+ Leads...';
+            if (freshBtn) freshBtn.disabled = true;
+
+            if (force) {
+                statusText.innerText = 'Executing fresh live scan across Google Maps directories...';
+                if (freshBtn) freshBtn.innerHTML = '<div class="spinner"></div> Running Live Scan...';
+            } else {
+                statusText.innerText = 'Loading cached website leads instantly from local JSON file...';
+                scanBtn.innerHTML = '<div class="spinner"></div> Loading...';
+            }
             banner.style.display = 'flex';
 
             try {
-                const response = await fetch('/api/scan/website', { method: 'POST' });
+                const url = force ? '/api/scan/website?force=true' : '/api/scan/website';
+                const response = await fetch(url, { method: 'POST' });
                 rawLeads = await response.json();
                 applyFilters();
             } catch (err) {
                 alert('Scanning failed: ' + err.message);
             } finally {
                 scanBtn.disabled = false;
-                scanBtn.innerHTML = '<span>🔍</span> SCAN MAPS PROSPECTS (200+)';
+                if (freshBtn) freshBtn.disabled = false;
+                scanBtn.innerHTML = '<span>⚡</span> LOAD SAVED LEADS (FAST)';
+                if (freshBtn) freshBtn.innerHTML = '<span>🔄</span> FRESH RESCAN';
                 banner.style.display = 'none';
             }
         }
+
+        // Auto-load saved website leads on initial page load
+        document.addEventListener('DOMContentLoaded', () => {
+            scanWebsiteLeads(false);
+        });
 
         function extractBudgetMin(budgetStr) {
             if (!budgetStr) return 0;

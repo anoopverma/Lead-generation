@@ -4,6 +4,20 @@ All notable changes, features, bug fixes, and updates to the **Salesforce & Loca
 
 ---
 
+## [1.5.0] - 2026-10-03
+
+### Added / Updated
+- **Local JSON File Caching System (`app.py`)**:
+  - Implemented automatic local JSON file caching (`output/salesforce_scanned_leads.json` & `output/google_maps_scanned_leads.json`).
+  - Standard requests now serve instantly from local file (< 4 milliseconds) without re-executing expensive live scans across external APIs.
+  - Added support for `force=true` query parameter / JSON payload (`/api/scan?force=true` & `/api/scan/website?force=true`) to force live rescans when explicitly requested by the user.
+- **UI Enhancements (`index.html` & `website_leads.html`)**:
+  - Added **`⚡ LOAD SAVED LEADS (FAST)`** button for instant local JSON file loading.
+  - Added **`🔄 FRESH RESCAN`** button for triggering on-demand live scans.
+  - Added automatic DOM load triggering on page load to pre-populate leads instantly.
+
+---
+
 ## [1.4.0] - 2026-10-03
 
 ### Added / Updated

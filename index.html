@@ -463,8 +463,11 @@
                 </div>
             </div>
             <div class="actions-group">
-                <button id="btn-scan" class="btn" onclick="scanProjects()">
-                    <span>🔍</span> SCAN FOR PROJECTS (200+)
+                <button id="btn-scan" class="btn" onclick="scanProjects(false)" title="Loads leads instantly from local JSON cache file">
+                    <span>⚡</span> LOAD SAVED LEADS (FAST)
+                </button>
+                <button id="btn-fresh-scan" class="btn" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);" onclick="scanProjects(true)" title="Forces fresh live scan across all APIs and saves to local JSON cache file">
+                    <span>🔄</span> FRESH RESCAN
                 </button>
                 <button id="btn-export-csv" class="btn btn-export" onclick="exportCSV()">
                     <span>📥</span> EXPORT CSV
@@ -601,25 +604,44 @@
         let currentSortColumn = 'confidence_score';
         let currentSortAsc = false;
 
-        async function scanProjects() {
+        async function scanProjects(force = false) {
             const scanBtn = document.getElementById('btn-scan');
+            const freshBtn = document.getElementById('btn-fresh-scan');
             const banner = document.getElementById('status-banner');
+            const statusText = document.getElementById('status-text');
+
             scanBtn.disabled = true;
-            scanBtn.innerHTML = '<div class="spinner"></div> Scanning 200+ Projects...';
+            if (freshBtn) freshBtn.disabled = true;
+
+            if (force) {
+                statusText.innerText = 'Executing fresh live scan across all APIs & collectors...';
+                if (freshBtn) freshBtn.innerHTML = '<div class="spinner"></div> Running Live Scan...';
+            } else {
+                statusText.innerText = 'Loading cached leads instantly from local JSON file...';
+                scanBtn.innerHTML = '<div class="spinner"></div> Loading...';
+            }
             banner.style.display = 'flex';
 
             try {
-                const response = await fetch('/api/scan', { method: 'POST' });
+                const url = force ? '/api/scan?force=true' : '/api/scan';
+                const response = await fetch(url, { method: 'POST' });
                 rawLeads = await response.json();
                 applyFilters();
             } catch (err) {
                 alert('Scanning failed: ' + err.message);
             } finally {
                 scanBtn.disabled = false;
-                scanBtn.innerHTML = '<span>🔍</span> SCAN FOR PROJECTS (200+)';
+                if (freshBtn) freshBtn.disabled = false;
+                scanBtn.innerHTML = '<span>⚡</span> LOAD SAVED LEADS (FAST)';
+                if (freshBtn) freshBtn.innerHTML = '<span>🔄</span> FRESH RESCAN';
                 banner.style.display = 'none';
             }
         }
+
+        // Auto-load saved leads on initial page load
+        document.addEventListener('DOMContentLoaded', () => {
+            scanProjects(false);
+        });
 
         function extractBudgetMin(budgetStr) {
             if (!budgetStr) return 0;
