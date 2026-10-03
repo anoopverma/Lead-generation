@@ -140,3 +140,15 @@ class GoogleMapsCollectorStrategy(ICollectorStrategy):
             query=query, location=location, min_rating=min_rating, min_reviews=min_reviews
         )
 
+
+class IndiaCollectorStrategy(ICollectorStrategy):
+    """Concrete Collector Strategy for India-exclusive Salesforce & Website opportunities."""
+
+    def __init__(self, config: Dict[str, Any] = None):
+        from ...collectors.india_collector import IndiaLeadCollector
+        self.collector = IndiaLeadCollector()
+
+    def collect(self, **kwargs) -> List[Dict[str, Any]]:
+        return self.collector.collect_india_leads()
+
+

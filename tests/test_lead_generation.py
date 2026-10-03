@@ -202,3 +202,22 @@ def test_google_maps_collector_and_strategy():
     assert "Mobile Website" in pitch["subject"]
 
 
+def test_india_collector_and_strategy():
+    from src.collectors.india_collector import IndiaLeadCollector
+    collector = IndiaLeadCollector()
+    leads = collector.collect_india_leads()
+    assert isinstance(leads, list)
+    assert len(leads) >= 200
+    assert leads[0]["country"] == "India"
+
+    india_strat = CollectorFactory.create_collector("india")
+    strat_leads = india_strat.collect()
+    assert len(strat_leads) >= 200
+
+    scoring_strat = ScoringStrategyFactory.create_scoring_strategy("default")
+    scored = scoring_strat.score_and_filter([], [], strat_leads, min_confidence=60)
+    assert len(scored) >= 200
+    assert scored[0]["confidence_score"] > 60
+
+
+

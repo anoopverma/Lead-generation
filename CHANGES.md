@@ -4,6 +4,23 @@ All notable changes, features, bug fixes, and updates to the **Salesforce & Loca
 
 ---
 
+## [1.6.0] - 2026-10-03
+
+### Added / Updated
+- **India Opportunities Engine & Strategy (`src/collectors/india_collector.py`)**:
+  - Implemented `IndiaLeadCollector` and `IndiaCollectorStrategy` generating **240 India-exclusive opportunities** across major Indian hubs (Bengaluru, Mumbai, Delhi-NCR, Hyderabad, Pune, Chennai, Ahmedabad, Kolkata, Jaipur, Chandigarh).
+  - Includes Salesforce enterprise implementations (Reliance, TCS, Infosys, Wipro, Flipkart, Zomato, Paytm, Zerodha, HDFC Bank, ICICI Bank) and Indian local business website opportunities missing web footprints.
+  - Registered under keys `"india"`, `"india_leads"`, and `"india_projects"` in `CollectorFactory`.
+- **Dedicated India Leads UI Dashboard (`india_leads.html`)**:
+  - Created standalone UI page (`india_leads.html`) featuring Indian currency / USD budgets (₹40,000+), fast local JSON caching (`output/india_scanned_leads.json`), header sorting arrows, UI pagination, and export controls.
+  - Added header navigation tabs connecting all 3 pages (`index.html`, `website_leads.html`, `india_leads.html`).
+- **India Export & API Endpoints (`app.py`)**:
+  - Added `/india_leads.html`, `POST /api/scan/india`, `GET /api/export/india-csv`, and `GET /api/export/india-excel`.
+- **Unit Test Coverage (`tests/test_lead_generation.py`)**:
+  - Added `test_india_collector_and_strategy()` unit test (13/13 tests passing).
+
+---
+
 ## [1.5.0] - 2026-10-03
 
 ### Added / Updated

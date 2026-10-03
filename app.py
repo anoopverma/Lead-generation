@@ -23,10 +23,12 @@ PORT = 8000
 # Cache file paths
 SALESFORCE_CACHE_PATH = os.path.join("output", "salesforce_scanned_leads.json")
 WEBSITE_CACHE_PATH = os.path.join("output", "google_maps_scanned_leads.json")
+INDIA_CACHE_PATH = os.path.join("output", "india_scanned_leads.json")
 
 # Global cached lead stores for fast in-memory web interaction
 SCANNED_LEADS = []
 SCANNED_WEBSITE_LEADS = []
+SCANNED_INDIA_LEADS = []
 
 def run_project_scan(force: bool = False) -> list:
     """
@@ -143,6 +145,55 @@ def run_website_scan(force: bool = False) -> list:
     return SCANNED_WEBSITE_LEADS
 
 
+def run_india_scan(force: bool = False) -> list:
+    """
+    Executes India-exclusive Salesforce & Website lead scan & scoring via Strategy & Factory patterns.
+    If force is False and local JSON cache file exists, loads and serves instantly from file.
+    Otherwise performs full live scan and caches results to local JSON file.
+    """
+    global SCANNED_INDIA_LEADS
+
+    if not force and os.path.exists(INDIA_CACHE_PATH):
+        try:
+            logger.info(f"⚡ Loading India leads instantly from local JSON file ({INDIA_CACHE_PATH})...")
+            with open(INDIA_CACHE_PATH, "r", encoding="utf-8") as f:
+                SCANNED_INDIA_LEADS = json.load(f)
+            logger.info(f"Loaded {len(SCANNED_INDIA_LEADS)} cached India leads instantly from local JSON file.")
+            return SCANNED_INDIA_LEADS
+        except Exception as e:
+            logger.warning(f"Failed to read local India cache JSON file: {e}. Running fresh live scan...")
+
+    logger.info("Executing fresh live India scan via Collector & Scoring Factories...")
+
+    india_strategy = CollectorFactory.create_collector("india")
+    india_leads = india_strategy.collect()
+
+    scoring_strategy = ScoringStrategyFactory.create_scoring_strategy("default")
+    scored_leads = scoring_strategy.score_and_filter(
+        job_leads=[],
+        tech_scans=[],
+        intent_leads=india_leads,
+        min_confidence=60
+    )
+
+    pitch_gen = OutreachGenerator()
+    for lead in scored_leads:
+        lead["pitch"] = pitch_gen.generate_pitch(lead)
+
+    SCANNED_INDIA_LEADS = scored_leads
+
+    # Save results to local JSON cache file
+    try:
+        os.makedirs("output", exist_ok=True)
+        with open(INDIA_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(SCANNED_INDIA_LEADS, f, indent=2)
+        logger.info(f"Saved {len(SCANNED_INDIA_LEADS)} India leads to local JSON cache file ({INDIA_CACHE_PATH}).")
+    except Exception as e:
+        logger.warning(f"Could not save India JSON cache file: {e}")
+
+    return SCANNED_INDIA_LEADS
+
+
 class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed_url = urllib.parse.urlparse(self.path)
@@ -164,6 +215,13 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
             with open("website_leads.html", "rb") as f:
                 self.wfile.write(f.read())
 
+        elif url_path == "/india_leads.html":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            with open("india_leads.html", "rb") as f:
+                self.wfile.write(f.read())
+
         elif url_path in ["/api/scan", "/api/leads"]:
             leads = run_project_scan(force=force_scan)
             self.send_response(200)
@@ -173,6 +231,13 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
 
         elif url_path in ["/api/scan/website", "/api/website-leads"]:
             leads = run_website_scan(force=force_scan)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(leads).encode("utf-8"))
+
+        elif url_path in ["/api/scan/india", "/api/india-leads"]:
+            leads = run_india_scan(force=force_scan)
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
@@ -214,6 +279,24 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 self.send_error(500, "Failed to generate website CSV export file.")
 
+        elif url_path in ["/api/export/india-csv"]:
+            global SCANNED_INDIA_LEADS
+            if not SCANNED_INDIA_LEADS:
+                SCANNED_INDIA_LEADS = run_india_scan(force=False)
+
+            csv_exporter = ExporterFactory.create_exporter("csv")
+            filepath = csv_exporter.export(SCANNED_INDIA_LEADS, filename="india_salesforce_website_leads.csv")
+
+            if os.path.exists(filepath):
+                self.send_response(200)
+                self.send_header("Content-Type", "text/csv; charset=utf-8")
+                self.send_header("Content-Disposition", 'attachment; filename="india_salesforce_website_leads.csv"')
+                self.end_headers()
+                with open(filepath, "rb") as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_error(500, "Failed to generate India CSV export file.")
+
         elif url_path in ["/api/export/website-excel", "/api/export/excel"]:
             if not SCANNED_WEBSITE_LEADS:
                 SCANNED_WEBSITE_LEADS = run_website_scan(force=False)
@@ -230,6 +313,23 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(f.read())
             else:
                 self.send_error(500, "Failed to generate Excel export file.")
+
+        elif url_path in ["/api/export/india-excel"]:
+            if not SCANNED_INDIA_LEADS:
+                SCANNED_INDIA_LEADS = run_india_scan(force=False)
+
+            excel_exporter = ExporterFactory.create_exporter("excel")
+            filepath = excel_exporter.export(SCANNED_INDIA_LEADS, filename="india_salesforce_website_leads.xls")
+
+            if os.path.exists(filepath):
+                self.send_response(200)
+                self.send_header("Content-Type", "application/vnd.ms-excel")
+                self.send_header("Content-Disposition", 'attachment; filename="india_salesforce_website_leads.xls"')
+                self.end_headers()
+                with open(filepath, "rb") as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_error(500, "Failed to generate India Excel export file.")
 
         else:
             self.send_error(404, "Page Not Found")
@@ -262,6 +362,12 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(leads).encode("utf-8"))
+        elif url_path == "/api/scan/india":
+            leads = run_india_scan(force=force_scan)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(leads).encode("utf-8"))
         else:
             self.send_error(404, "Endpoint Not Found")
 
@@ -272,6 +378,7 @@ def run_server():
         logger.info(f"🌐 Lead Generation Dashboard active at: http://localhost:{PORT}")
         logger.info(f"   ⚡ Salesforce Leads: http://localhost:{PORT}/index.html")
         logger.info(f"   🗺️ Local Business Website Leads: http://localhost:{PORT}/website_leads.html")
+        logger.info(f"   🇮🇳 India Opportunities: http://localhost:{PORT}/india_leads.html")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
@@ -279,4 +386,5 @@ def run_server():
 
 if __name__ == "__main__":
     run_server()
+
 
