@@ -110,7 +110,8 @@ class LeadScorer:
 
         # 4. Account for Free-Tier Enrichment & Calculate Confidence Score
         for key, lead in lead_map.items():
-            confidence = 50  # Base confidence for signal detection
+            # Base confidence for verified signal detection (hiring signal / intent signal / domain contact)
+            confidence = 70 if (lead.get("hiring_signal") or lead.get("intent_signal") or lead.get("domain")) else 50
             enrichment = lead.get("enrichment", {})
 
             # Special verification for Google Maps local business leads
