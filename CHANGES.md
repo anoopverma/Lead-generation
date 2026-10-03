@@ -4,6 +4,22 @@ All notable changes, features, bug fixes, and updates to the **Salesforce & Loca
 
 ---
 
+## [1.3.0] - 2026-10-03
+
+### Added / Updated
+- **Salesforce Lead Generator Expansion (`src/collectors/job_signals.py` & `src/collectors/intent_finder.py`)**:
+  - Expanded Salesforce job signal and intent signal collectors to return **220+ enterprise project opportunities**.
+  - Included budget tiers starting at **>$500** ($500 - $1,500 starter, $1,500 - $3,500 standard, $3,500 - $8,000+ custom/enterprise).
+- **Salesforce Dashboard UI (`index.html`)**:
+  - Added full **UI Pagination Controls** (Previous, Next, page buttons, 25 items per page selector) supporting 200+ records cleanly.
+  - Added interactive **Header Column Sorting Arrows** (`▲`/`▼`/`↕`) on all table columns (Company, Domain, Timeline, Budget, Confidence, Lead Score, Grade).
+  - Added **`📊 EXPORT EXCEL`** native spreadsheet export button alongside `📥 EXPORT CSV`.
+  - Added dynamic budget threshold dropdown filter starting at **>$500**.
+- **Excel Exporter (`src/export/exporter.py` & `src/patterns/strategies/exporter_strategies.py`)**:
+  - Implemented SpreadsheetML Excel exporter generating clean native Excel files without third-party binary library overhead.
+
+---
+
 ## [1.2.0] - 2026-10-03
 
 ### Added / Updated

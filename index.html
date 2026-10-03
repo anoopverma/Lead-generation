@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salesforce Lead Generation & Project Scanner</title>
+    <meta name="description" content="Scan Salesforce project buying signals, calculate confidence scores & export 200+ enriched Salesforce project opportunities.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -30,8 +31,42 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1450px;
             margin: 0 auto;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 0.75rem;
+        }
+
+        .nav-tab {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-tab.active {
+            color: white;
+            background: var(--accent-sf-gradient);
+            border-color: rgba(0, 161, 224, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 161, 224, 0.3);
         }
 
         .header {
@@ -162,7 +197,32 @@
 
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--card-border); }
-        th { background: #0c1424; color: var(--text-muted); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        th { 
+            background: #0c1424; 
+            color: var(--text-muted); 
+            font-weight: 700; 
+            font-size: 0.8rem; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em;
+            user-select: none;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            transition: color 0.2s, background-color 0.2s;
+        }
+
+        th.sortable:hover {
+            color: var(--text-main);
+            background: #152238;
+        }
+
+        .sort-arrow {
+            display: inline-block;
+            margin-left: 0.3rem;
+            font-size: 0.75rem;
+            color: var(--accent-sf);
+        }
 
         tr:hover { background: var(--panel-hover); }
 
@@ -271,38 +331,113 @@
             border-color: var(--text-muted);
         }
 
-        .nav-tabs {
+        /* Pagination Styles */
+        .pagination-bar {
             display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-top: none;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            flex-wrap: wrap;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+        }
+
+        .pagination-info {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-page {
+            background: #090d16;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.45rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-page:hover:not(:disabled) {
+            background: var(--accent-sf-gradient);
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(0, 161, 224, 0.3);
+        }
+
+        .btn-page:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Pitch Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1.5rem;
+        }
+
+        .modal-box {
+            background: #131c2e;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 650px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
             border-bottom: 1px solid var(--card-border);
             padding-bottom: 0.75rem;
         }
 
-        .nav-tab {
-            color: var(--text-muted);
-            text-decoration: none;
-            padding: 0.6rem 1.25rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: 1px solid transparent;
+        .modal-close {
+            background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;
         }
 
-        .nav-tab:hover {
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.05);
+        .pitch-subject {
+            background: #090d16;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 1rem;
+            border: 1px solid var(--card-border);
         }
 
-        .nav-tab.active {
-            color: white;
-            background: var(--accent-sf-gradient);
-            border-color: rgba(0, 161, 224, 0.4);
-            box-shadow: 0 4px 15px rgba(0, 161, 224, 0.3);
+        .pitch-body {
+            background: #090d16;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.88rem;
+            white-space: pre-wrap;
+            color: #e2e8f0;
+            border: 1px solid var(--card-border);
+            max-height: 300px;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -312,10 +447,10 @@
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
             <a href="/index.html" class="nav-tab active">
-                <span>⚡</span> Salesforce Enterprise Leads
+                <span>⚡</span> Salesforce Enterprise Leads (200+)
             </a>
             <a href="/website_leads.html" class="nav-tab">
-                <span>🗺️</span> Local Business Website Leads (Google Maps)
+                <span>🗺️</span> Local Business Website Leads (Google Maps 200+)
             </a>
         </div>
 
@@ -324,22 +459,25 @@
                 <div class="logo-badge">⚡ SF Lead Scanner</div>
                 <div>
                     <h1>Salesforce Project Lead Intelligence</h1>
-                    <p class="subtitle">Scan buying signals, calculate confidence scores & export enriched project leads</p>
+                    <p class="subtitle">Scan 200+ Salesforce buying signals, calculate confidence scores & export enriched project leads</p>
                 </div>
             </div>
             <div class="actions-group">
                 <button id="btn-scan" class="btn" onclick="scanProjects()">
-                    <span>🔍</span> SCAN FOR PROJECTS
+                    <span>🔍</span> SCAN FOR PROJECTS (200+)
                 </button>
-                <button id="btn-export" class="btn btn-export" onclick="exportCSV()">
-                    <span>📥</span> EXPORT TO CSV
+                <button id="btn-export-csv" class="btn btn-export" onclick="exportCSV()">
+                    <span>📥</span> EXPORT CSV
+                </button>
+                <button id="btn-export-excel" class="btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);" onclick="exportExcel()">
+                    <span>📊</span> EXPORT EXCEL
                 </button>
             </div>
         </div>
 
         <div id="status-banner" class="status-banner" style="display: none;">
             <div class="spinner"></div>
-            <span id="status-text">Scanning hiring signals, RFPs, tech stacks and running free-tier enrichment APIs...</span>
+            <span id="status-text">Scanning hiring signals, RFPs, tech stacks and running free-tier enrichment APIs across 200+ Salesforce opportunities...</span>
         </div>
 
         <div class="stats-grid">
@@ -352,8 +490,8 @@
                 <div class="stat-val" style="color: #10b981;" id="verified-leads">--</div>
             </div>
             <div class="stat-card">
-                <div class="stat-lbl">Avg. Project Budget</div>
-                <div class="stat-val" style="color: #f59e0b;" id="avg-budget">$150k+</div>
+                <div class="stat-lbl">Deals > $500 & Up</div>
+                <div class="stat-val" style="color: #f59e0b;" id="starter-deals">--</div>
             </div>
             <div class="stat-card">
                 <div class="stat-lbl">Hot Opportunities (A+)</div>
@@ -365,7 +503,7 @@
         <div class="filter-panel">
             <div class="filter-group">
                 <span class="filter-label">🔎 Search:</span>
-                <input type="text" id="filter-search" class="filter-input" placeholder="Company, domain, keyword..." oninput="applyFilters()">
+                <input type="text" id="filter-search" class="filter-input" placeholder="Company, domain, role, keyword..." oninput="applyFilters()">
 
                 <span class="filter-label" style="margin-left: 0.5rem;">🛡️ Min Confidence:</span>
                 <select id="filter-confidence" class="filter-select" onchange="applyFilters()">
@@ -373,6 +511,14 @@
                     <option value="60" selected>> 60% Verified</option>
                     <option value="75">> 75% Verified</option>
                     <option value="85">> 85% Verified</option>
+                </select>
+
+                <span class="filter-label" style="margin-left: 0.5rem;">💰 Min Budget:</span>
+                <select id="filter-budget" class="filter-select" onchange="applyFilters()">
+                    <option value="0">All Budgets (Starting >$500)</option>
+                    <option value="500">> $500 (Quick Tweaks)</option>
+                    <option value="2500">> $2,500 (Custom Builds)</option>
+                    <option value="10000">> $10,000 (Enterprise Deals)</option>
                 </select>
 
                 <span class="filter-label" style="margin-left: 0.5rem;">⭐ Grade:</span>
@@ -384,11 +530,12 @@
                     <option value="C">C</option>
                 </select>
 
-                <span class="filter-label" style="margin-left: 0.5rem;">🔀 Sort By:</span>
-                <select id="sort-by" class="filter-select" onchange="applyFilters()">
-                    <option value="conf-desc">Confidence (High to Low)</option>
-                    <option value="score-desc">Lead Score (High to Low)</option>
-                    <option value="company-asc">Company Name (A-Z)</option>
+                <span class="filter-label" style="margin-left: 0.5rem;">📄 Per Page:</span>
+                <select id="page-size" class="filter-select" onchange="changePageSize()">
+                    <option value="10">10 per page</option>
+                    <option value="25" selected>25 per page</option>
+                    <option value="50">50 per page</option>
+                    <option value="100">100 per page</option>
                 </select>
             </div>
             <div>
@@ -400,34 +547,65 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Company & Domain</th>
-                        <th>Project Description</th>
-                        <th>Timeline</th>
-                        <th>Budget</th>
+                        <th class="sortable" onclick="sortTable('company_name')">Company & Domain <span class="sort-arrow" id="sort-icon-company_name">↕</span></th>
+                        <th class="sortable" onclick="sortTable('project_description')">Project Description <span class="sort-arrow" id="sort-icon-project_description">↕</span></th>
+                        <th class="sortable" onclick="sortTable('timeline')">Timeline <span class="sort-arrow" id="sort-icon-timeline">↕</span></th>
+                        <th class="sortable" onclick="sortTable('budget')">Budget <span class="sort-arrow" id="sort-icon-budget">↕</span></th>
                         <th>Contact Details</th>
-                        <th>Confidence Score</th>
-                        <th>Lead Score</th>
+                        <th class="sortable" onclick="sortTable('confidence_score')">Confidence Score <span class="sort-arrow" id="sort-icon-confidence_score">↕</span></th>
+                        <th class="sortable" onclick="sortTable('score')">Lead Score <span class="sort-arrow" id="sort-icon-score">↕</span></th>
+                        <th>Action Pitch</th>
                     </tr>
                 </thead>
                 <tbody id="leads-body">
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-                            Click <strong>"SCAN FOR PROJECTS"</strong> to execute live signal collection & enrichment.
+                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                            Click <strong>"SCAN FOR PROJECTS (200+)"</strong> to execute live signal collection & enrichment.
                         </td>
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Pagination Bar -->
+            <div class="pagination-bar">
+                <div class="pagination-info" id="pagination-info">Showing 0 - 0 of 0 leads</div>
+                <div class="pagination-controls">
+                    <button class="btn-page" id="btn-first" onclick="goToPage(1)" disabled>⏮ First</button>
+                    <button class="btn-page" id="btn-prev" onclick="goToPage(currentPage - 1)" disabled>◀ Prev</button>
+                    <span id="page-num-display" style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin: 0 0.5rem;">Page 1 of 1</span>
+                    <button class="btn-page" id="btn-next" onclick="goToPage(currentPage + 1)" disabled>Next ▶</button>
+                    <button class="btn-page" id="btn-last" onclick="goToPage(totalPages)" disabled>Last ⏭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pitch Modal -->
+    <div id="pitch-modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modal-title">✉️ Cold Pitch Template</h3>
+                <button class="modal-close" onclick="closeModalDirect()">✕</button>
+            </div>
+            <div class="pitch-subject" id="modal-subject">Subject: ...</div>
+            <div class="pitch-body" id="modal-body">Loading email template...</div>
         </div>
     </div>
 
     <script>
         let rawLeads = [];
+        let filteredLeads = [];
+        let currentPage = 1;
+        let pageSize = 25;
+        let totalPages = 1;
+        let currentSortColumn = 'confidence_score';
+        let currentSortAsc = false;
 
         async function scanProjects() {
             const scanBtn = document.getElementById('btn-scan');
             const banner = document.getElementById('status-banner');
             scanBtn.disabled = true;
-            scanBtn.innerHTML = '<div class="spinner"></div> Scanning...';
+            scanBtn.innerHTML = '<div class="spinner"></div> Scanning 200+ Projects...';
             banner.style.display = 'flex';
 
             try {
@@ -438,9 +616,16 @@
                 alert('Scanning failed: ' + err.message);
             } finally {
                 scanBtn.disabled = false;
-                scanBtn.innerHTML = '<span>🔍</span> SCAN FOR PROJECTS';
+                scanBtn.innerHTML = '<span>🔍</span> SCAN FOR PROJECTS (200+)';
                 banner.style.display = 'none';
             }
+        }
+
+        function extractBudgetMin(budgetStr) {
+            if (!budgetStr) return 0;
+            const match = budgetStr.match(/\$(\d+[\d,]*)/);
+            if (match) return parseInt(match[1].replace(/,/g, ''), 10);
+            return 0;
         }
 
         function applyFilters() {
@@ -449,51 +634,108 @@
             const searchTerm = document.getElementById('filter-search').value.toLowerCase().trim();
             const minConf = parseInt(document.getElementById('filter-confidence').value, 10) || 0;
             const gradeFilter = document.getElementById('filter-grade').value;
-            const sortBy = document.getElementById('sort-by').value;
+            const minBudget = parseInt(document.getElementById('filter-budget').value, 10) || 0;
 
-            let filtered = rawLeads.filter(lead => {
+            filteredLeads = rawLeads.filter(lead => {
                 if (searchTerm) {
                     const textToSearch = `${lead.company_name} ${lead.domain} ${lead.project_description || ''} ${lead.intent_signal || ''} ${lead.hiring_signal || ''} ${lead.contact_details || ''}`.toLowerCase();
                     if (!textToSearch.includes(searchTerm)) return false;
                 }
 
                 if (lead.confidence_score < minConf) return false;
-
                 if (gradeFilter !== 'ALL' && lead.grade !== gradeFilter) return false;
+
+                if (minBudget > 0) {
+                    const leadBudgetMin = extractBudgetMin(lead.budget || lead.estimated_budget);
+                    if (leadBudgetMin < minBudget) return false;
+                }
 
                 return true;
             });
 
-            filtered.sort((a, b) => {
-                if (sortBy === 'conf-desc') return (b.confidence_score || 0) - (a.confidence_score || 0);
-                if (sortBy === 'score-desc') return (b.score || 0) - (a.score || 0);
-                if (sortBy === 'company-asc') return (a.company_name || '').localeCompare(b.company_name || '');
-                return 0;
+            sortFilteredData();
+            currentPage = 1;
+            renderCurrentPage();
+        }
+
+        function sortTable(columnKey) {
+            if (currentSortColumn === columnKey) {
+                currentSortAsc = !currentSortAsc;
+            } else {
+                currentSortColumn = columnKey;
+                currentSortAsc = false;
+            }
+            sortFilteredData();
+            renderCurrentPage();
+        }
+
+        function sortFilteredData() {
+            document.querySelectorAll('.sort-arrow').forEach(el => el.innerText = '↕');
+            const activeIcon = document.getElementById(`sort-icon-${currentSortColumn}`);
+            if (activeIcon) activeIcon.innerText = currentSortAsc ? '▲' : '▼';
+
+            filteredLeads.sort((a, b) => {
+                let valA = a[currentSortColumn];
+                let valB = b[currentSortColumn];
+
+                if (currentSortColumn === 'budget') {
+                    valA = extractBudgetMin(a.budget || a.estimated_budget);
+                    valB = extractBudgetMin(b.budget || b.estimated_budget);
+                }
+
+                if (valA === undefined || valA === null) valA = '';
+                if (valB === undefined || valB === null) valB = '';
+
+                if (typeof valA === 'string') {
+                    const res = valA.localeCompare(valB);
+                    return currentSortAsc ? res : -res;
+                }
+                return currentSortAsc ? (valA - valB) : (valB - valA);
             });
-
-            renderLeads(filtered);
         }
 
-        function resetFilters() {
-            document.getElementById('filter-search').value = '';
-            document.getElementById('filter-confidence').value = '60';
-            document.getElementById('filter-grade').value = 'ALL';
-            document.getElementById('sort-by').value = 'conf-desc';
-            applyFilters();
+        function changePageSize() {
+            pageSize = parseInt(document.getElementById('page-size').value, 10) || 25;
+            currentPage = 1;
+            renderCurrentPage();
         }
 
-        function renderLeads(leads) {
-            document.getElementById('total-leads').innerText = leads.length;
-            document.getElementById('verified-leads').innerText = leads.filter(l => l.confidence_score > 60).length;
-            document.getElementById('hot-opportunities').innerText = leads.filter(l => l.score >= 85).length;
+        function goToPage(page) {
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderCurrentPage();
+        }
+
+        function renderCurrentPage() {
+            document.getElementById('total-leads').innerText = filteredLeads.length;
+            document.getElementById('verified-leads').innerText = filteredLeads.filter(l => l.confidence_score > 60).length;
+            document.getElementById('starter-deals').innerText = filteredLeads.filter(l => extractBudgetMin(l.budget || l.estimated_budget) >= 500).length;
+            document.getElementById('hot-opportunities').innerText = filteredLeads.filter(l => l.score >= 85).length;
+
+            totalPages = Math.ceil(filteredLeads.length / pageSize) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, filteredLeads.length);
+            const pageData = filteredLeads.slice(startIndex, endIndex);
+
+            document.getElementById('pagination-info').innerText = filteredLeads.length > 0 
+                ? `Showing ${startIndex + 1} - ${endIndex} of ${filteredLeads.length} leads` 
+                : 'Showing 0 - 0 of 0 leads';
+
+            document.getElementById('page-num-display').innerText = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('btn-first').disabled = currentPage === 1;
+            document.getElementById('btn-prev').disabled = currentPage === 1;
+            document.getElementById('btn-next').disabled = currentPage === totalPages || filteredLeads.length === 0;
+            document.getElementById('btn-last').disabled = currentPage === totalPages || filteredLeads.length === 0;
 
             const tbody = document.getElementById('leads-body');
-            if (!leads || leads.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">No leads match current filter criteria.</td></tr>`;
+            if (!pageData || pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">No leads match current filter criteria.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = leads.map(lead => `
+            tbody.innerHTML = pageData.map((lead, idx) => `
                 <tr>
                     <td>
                         <strong>${lead.company_name}</strong><br>
@@ -519,8 +761,15 @@
                     <td>
                         <span class="badge-score">${lead.score}/100 • ${lead.grade}</span>
                     </td>
+                    <td>
+                        <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="openPitchModal(${startIndex + idx})">
+                            ✉️ View Pitch
+                        </button>
+                    </td>
                 </tr>
             `).join('');
+
+            window.currentRenderedData = pageData;
         }
 
         function formatContactDetails(text) {
@@ -529,8 +778,41 @@
             return text.replace(urlRegex, url => `<a href="${url}" target="_blank" style="color:#38bdf8; text-decoration:underline;">LinkedIn Profile ↗</a>`);
         }
 
+        function resetFilters() {
+            document.getElementById('filter-search').value = '';
+            document.getElementById('filter-confidence').value = '60';
+            document.getElementById('filter-budget').value = '0';
+            document.getElementById('filter-grade').value = 'ALL';
+            document.getElementById('page-size').value = '25';
+            currentSortColumn = 'confidence_score';
+            currentSortAsc = false;
+            applyFilters();
+        }
+
+        function openPitchModal(globalIdx) {
+            const lead = filteredLeads[globalIdx];
+            if (!lead || !lead.pitch) return;
+
+            document.getElementById('modal-title').innerText = `✉️ Cold Pitch for ${lead.company_name}`;
+            document.getElementById('modal-subject').innerText = `Subject: ${lead.pitch.subject}`;
+            document.getElementById('modal-body').innerText = lead.pitch.body;
+            document.getElementById('pitch-modal').style.display = 'flex';
+        }
+
+        function closeModalDirect() {
+            document.getElementById('pitch-modal').style.display = 'none';
+        }
+
+        function closeModal(e) {
+            if (e.target.id === 'pitch-modal') closeModalDirect();
+        }
+
         function exportCSV() {
             window.location.href = '/api/export/csv';
+        }
+
+        function exportExcel() {
+            window.location.href = '/api/export/excel';
         }
     </script>
 </body>
