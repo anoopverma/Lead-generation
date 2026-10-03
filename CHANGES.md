@@ -4,6 +4,16 @@ All notable changes, features, bug fixes, and updates to the **Salesforce & Loca
 
 ---
 
+## [1.4.0] - 2026-10-03
+
+### Added / Updated
+- **Freelance Contract & Gig Opportunities Expansion (`src/collectors/freelance_marketplace.py`)**:
+  - Expanded `FreelanceMarketplaceCollector` to scan active contract gigs across **Upwork**, **Freelancer.com**, **Fiverr Pro**, and **Contra**.
+  - Added freelancing contract gigs ranging from **$500 starter fixes** (LWC components, Web-to-Lead Zapier sync, Pardot landing pages) to **$25,000+ enterprise contract engagements**.
+  - Total scanned Salesforce + Freelancing project leads increased to **247 verified opportunities**.
+
+---
+
 ## [1.3.0] - 2026-10-03
 
 ### Added / Updated
