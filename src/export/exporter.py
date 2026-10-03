@@ -24,20 +24,29 @@ class LeadExporter:
             return filepath
 
         fieldnames = [
-            "Company Name", "Domain", "Project Description", "Timeline",
-            "Budget", "Contact Details", "Confidence Score", "Lead Score", "Grade"
+            "Company Name", "Domain", "Category", "Project Description", "Timeline",
+            "Budget", "Latitude", "Longitude", "Google Maps Link", "Contact Details",
+            "Confidence Score", "Lead Score", "Grade"
         ]
 
         with open(filepath, mode="w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             for lead in leads:
+                lat = lead.get("latitude", "")
+                lon = lead.get("longitude", "")
+                maps_url = lead.get("maps_url", f"https://www.google.com/maps/search/?api=1&query={lat},{lon}" if lat and lon else "")
+
                 writer.writerow({
                     "Company Name": lead.get("company_name", ""),
                     "Domain": lead.get("domain", ""),
+                    "Category": lead.get("category", "N/A"),
                     "Project Description": lead.get("project_description", lead.get("intent_signal") or lead.get("hiring_signal", "")),
                     "Timeline": lead.get("timeline", "Immediate"),
                     "Budget": lead.get("budget", "N/A"),
+                    "Latitude": lat,
+                    "Longitude": lon,
+                    "Google Maps Link": maps_url,
                     "Contact Details": lead.get("contact_details", lead.get("contact_title", "")),
                     "Confidence Score": f"{lead.get('confidence_score', 0)}%",
                     "Lead Score": lead.get("score", 0),
@@ -45,6 +54,94 @@ class LeadExporter:
                 })
 
         logger.info(f"Successfully exported {len(leads)} leads to CSV: {filepath}")
+        return filepath
+
+    def export_to_excel(self, leads: List[Dict[str, Any]], filename: str = "google_maps_website_leads.xls") -> str:
+        """Exports leads list to a styled Microsoft Excel Spreadsheet (.xls/.xlsx compatible format)."""
+        filepath = os.path.join(self.output_dir, filename)
+        if not leads:
+            logger.warning("No leads provided for Excel export.")
+            return filepath
+
+        xml_lines = [
+            '<?xml version="1.0"?>',
+            '<?mso-application progid="Excel.Sheet"?>',
+            '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"',
+            ' xmlns:o="urn:schemas-microsoft-com:office:office"',
+            ' xmlns:x="urn:schemas-microsoft-com:office:excel"',
+            ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">',
+            ' <Styles>',
+            '  <Style ss:ID="HeaderStyle">',
+            '   <Font ss:FontName="Segoe UI" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>',
+            '   <Interior ss:Color="#EC4899" ss:Pattern="Solid"/>',
+            '   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>',
+            '  </Style>',
+            '  <Style ss:ID="DataStyle">',
+            '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Color="#111827"/>',
+            '   <Alignment ss:Vertical="Center"/>',
+            '  </Style>',
+            '  <Style ss:ID="BoldStyle">',
+            '   <Font ss:FontName="Segoe UI" ss:Size="10" ss:Color="#059669" ss:Bold="1"/>',
+            '   <Alignment ss:Vertical="Center"/>',
+            '  </Style>',
+            ' </Styles>',
+            ' <Worksheet ss:Name="Google Maps Website Leads">',
+            '  <Table>',
+            '   <Row ss:Height="24">',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Company Name</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Domain</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Category</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Rating</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Review Count</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Project Description</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Timeline</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Est. Web Budget</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Latitude</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Longitude</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Google Maps Link</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Phone</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Location</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Confidence Score</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Lead Score</Data></Cell>',
+            '    <Cell ss:StyleID="HeaderStyle"><Data ss:Type="String">Grade</Data></Cell>',
+            '   </Row>'
+        ]
+
+        def escape_xml(val):
+            return str(val or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+
+        for lead in leads:
+            lat = lead.get("latitude", "")
+            lon = lead.get("longitude", "")
+            maps_url = lead.get("maps_url", f"https://www.google.com/maps/search/?api=1&query={lat},{lon}" if lat and lon else "")
+
+            xml_lines.append('   <Row ss:Height="20">')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("company_name"))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("domain", ""))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("category", "Local Business"))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("rating", ""))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("review_count", ""))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("project_description", ""))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("timeline", "Immediate"))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="BoldStyle"><Data ss:Type="String">{escape_xml(lead.get("estimated_budget") or lead.get("budget", ""))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lat)}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lon)}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(maps_url)}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("phone", ""))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("location", ""))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("confidence_score", 0))}%</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("score", 0))}</Data></Cell>')
+            xml_lines.append(f'    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">{escape_xml(lead.get("grade", "B"))}</Data></Cell>')
+            xml_lines.append('   </Row>')
+
+        xml_lines.append('  </Table>')
+        xml_lines.append(' </Worksheet>')
+        xml_lines.append('</Workbook>')
+
+        with open(filepath, mode="w", encoding="utf-8") as f:
+            f.write("\n".join(xml_lines))
+
+        logger.info(f"Successfully exported {len(leads)} leads to Excel: {filepath}")
         return filepath
 
     def export_to_json(self, leads: List[Dict[str, Any]], filename: str = "salesforce_leads.json") -> str:

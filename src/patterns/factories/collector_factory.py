@@ -8,7 +8,8 @@ from ..strategies.collector_strategies import (
     LinkedInCollectorStrategy,
     LinkedInDirectoryScraperStrategy,
     LinkdAPIDiscoverStrategy,
-    FreelanceMarketplaceCollectorStrategy
+    FreelanceMarketplaceCollectorStrategy,
+    GoogleMapsCollectorStrategy
 )
 
 class CollectorFactory:
@@ -38,5 +39,8 @@ class CollectorFactory:
             return LinkdAPIDiscoverStrategy(config=config)
         elif ctype in ["freelance", "upwork", "freelancer", "marketplace"]:
             return FreelanceMarketplaceCollectorStrategy(keywords=config.get("intent_keywords"))
+        elif ctype in ["google_maps", "gmaps", "local_business", "no_website"]:
+            return GoogleMapsCollectorStrategy(config=config)
         else:
             raise ValueError(f"Unknown collector strategy type: '{collector_type}'")
+

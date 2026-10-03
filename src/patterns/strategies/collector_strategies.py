@@ -7,6 +7,8 @@ from ...collectors.enrichment_apis import FreeTierEnrichmentCollector
 from ...collectors.linkedin_scanner import LinkedInScannerCollector
 from ...collectors.freelance_marketplace import FreelanceMarketplaceCollector
 from ...collectors.linkedin_directory_scraper import LinkedInDirectoryScraperCollector
+from ...collectors.google_maps_collector import GoogleMapsLeadCollector
+
 
 class JobSignalCollectorStrategy(ICollectorStrategy):
     """Concrete Collector Strategy for Salesforce Job Hiring Signals."""
@@ -121,3 +123,20 @@ class FreelanceMarketplaceCollectorStrategy(ICollectorStrategy):
 
     def collect(self, **kwargs) -> List[Dict[str, Any]]:
         return self.collector.collect_all_marketplace_leads()
+
+
+class GoogleMapsCollectorStrategy(ICollectorStrategy):
+    """Concrete Collector Strategy for Google Maps local business leads lacking websites."""
+
+    def __init__(self, config: Dict[str, Any] = None):
+        self.collector = GoogleMapsLeadCollector()
+
+    def collect(self, **kwargs) -> List[Dict[str, Any]]:
+        query = kwargs.get("query", "local services")
+        location = kwargs.get("location", "Austin, TX")
+        min_rating = kwargs.get("min_rating", 4.0)
+        min_reviews = kwargs.get("min_reviews", 15)
+        return self.collector.search_no_website_businesses(
+            query=query, location=location, min_rating=min_rating, min_reviews=min_reviews
+        )
+

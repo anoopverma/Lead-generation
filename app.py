@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Salesforce Lead Generation Engine - Interactive Web Application Server
-Serves index.html with SCAN FOR PROJECTS and EXPORT TO CSV endpoints.
+Salesforce & Local Business Website Lead Generation Engine - Web Application Server
+Serves index.html (Salesforce Enterprise Leads) & website_leads.html (Google Maps Local Business Leads).
 Runs on http://localhost:8000
 """
 
@@ -18,11 +18,12 @@ from src.utils.logger import get_logger
 logger = get_logger("WebAppServer")
 PORT = 8000
 
-# Global cached lead store for fast web interaction
+# Global cached lead stores for fast web interaction
 SCANNED_LEADS = []
+SCANNED_WEBSITE_LEADS = []
 
 def run_project_scan() -> list:
-    """Executes full scan, enrichment, and scoring via Strategy & Factory patterns."""
+    """Executes full Salesforce scan, enrichment, and scoring via Strategy & Factory patterns."""
     global SCANNED_LEADS
     logger.info("Executing Salesforce project scan via Collector & Scoring Factories...")
 
@@ -63,6 +64,31 @@ def run_project_scan() -> list:
     return SCANNED_LEADS
 
 
+def run_website_scan() -> list:
+    """Executes Google Maps local business website lead scan & scoring via Strategy & Factory patterns."""
+    global SCANNED_WEBSITE_LEADS
+    logger.info("Executing Google Maps local business scan via Collector & Scoring Factories...")
+
+    gmaps_strategy = CollectorFactory.create_collector("google_maps")
+    gmaps_leads = gmaps_strategy.collect()
+
+    scoring_strategy = ScoringStrategyFactory.create_scoring_strategy("default")
+    scored_leads = scoring_strategy.score_and_filter(
+        job_leads=[],
+        tech_scans=[],
+        intent_leads=gmaps_leads,
+        min_confidence=60
+    )
+
+    pitch_gen = OutreachGenerator()
+    for lead in scored_leads:
+        lead["pitch"] = pitch_gen.generate_pitch(lead)
+
+    SCANNED_WEBSITE_LEADS = scored_leads
+    logger.info(f"Google Maps scan complete. Retained {len(SCANNED_WEBSITE_LEADS)} verified website leads.")
+    return SCANNED_WEBSITE_LEADS
+
+
 class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         url_path = urllib.parse.urlparse(self.path).path
@@ -74,8 +100,22 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
             with open("index.html", "rb") as f:
                 self.wfile.write(f.read())
 
+        elif url_path == "/website_leads.html":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            with open("website_leads.html", "rb") as f:
+                self.wfile.write(f.read())
+
         elif url_path in ["/api/scan", "/api/leads"]:
             leads = run_project_scan()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(leads).encode("utf-8"))
+
+        elif url_path in ["/api/scan/website", "/api/website-leads"]:
+            leads = run_website_scan()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
@@ -99,6 +139,24 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 self.send_error(500, "Failed to generate CSV export file.")
 
+        elif url_path in ["/api/export/website-csv"]:
+            global SCANNED_WEBSITE_LEADS
+            if not SCANNED_WEBSITE_LEADS:
+                SCANNED_WEBSITE_LEADS = run_website_scan()
+
+            csv_exporter = ExporterFactory.create_exporter("csv")
+            filepath = csv_exporter.export(SCANNED_WEBSITE_LEADS, filename="google_maps_website_leads.csv")
+
+            if os.path.exists(filepath):
+                self.send_response(200)
+                self.send_header("Content-Type", "text/csv; charset=utf-8")
+                self.send_header("Content-Disposition", 'attachment; filename="google_maps_website_leads.csv"')
+                self.end_headers()
+                with open(filepath, "rb") as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_error(500, "Failed to generate website CSV export file.")
+
         else:
             self.send_error(404, "Page Not Found")
 
@@ -111,6 +169,12 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps(leads).encode("utf-8"))
+        elif url_path == "/api/scan/website":
+            leads = run_website_scan()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(leads).encode("utf-8"))
         else:
             self.send_error(404, "Endpoint Not Found")
 
@@ -118,7 +182,9 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
 def run_server():
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), SalesforceLeadAppHandler) as httpd:
-        logger.info(f"🌐 Salesforce Lead Generation App active at: http://localhost:{PORT}")
+        logger.info(f"🌐 Lead Generation Dashboard active at: http://localhost:{PORT}")
+        logger.info(f"   ⚡ Salesforce Leads: http://localhost:{PORT}/index.html")
+        logger.info(f"   🗺️ Local Business Website Leads: http://localhost:{PORT}/website_leads.html")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

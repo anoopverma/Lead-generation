@@ -176,3 +176,29 @@ def test_github_linkedin_scrapers_and_strategies():
     seed_strat = CollectorFactory.create_collector("linkdapi")
     res_seed = seed_strat.collect()
     assert len(res_seed) > 0
+
+def test_google_maps_collector_and_strategy():
+    from src.collectors.google_maps_collector import GoogleMapsLeadCollector
+    collector = GoogleMapsLeadCollector()
+    leads = collector.search_no_website_businesses()
+    assert isinstance(leads, list)
+    assert len(leads) > 0
+    assert leads[0]["has_website"] is False
+    assert "Missing Website" in leads[0]["website_status"]
+    assert leads[0]["rating"] >= 4.0
+
+    gmaps_strat = CollectorFactory.create_collector("google_maps")
+    strat_leads = gmaps_strat.collect()
+    assert len(strat_leads) > 0
+    assert strat_leads[0]["lead_type"] == "google_maps_no_website"
+
+    scoring_strat = ScoringStrategyFactory.create_scoring_strategy("default")
+    scored = scoring_strat.score_and_filter([], [], strat_leads, min_confidence=60)
+    assert len(scored) > 0
+    assert scored[0]["confidence_score"] > 60
+
+    pitch_gen = OutreachGenerator()
+    pitch = pitch_gen.generate_pitch(scored[0])
+    assert "Mobile Website" in pitch["subject"]
+
+

@@ -1,8 +1,45 @@
 # Project Changes Log
 
-All notable changes, features, bug fixes, and updates to the **Salesforce Lead Generation Engine** repository will be documented in this file.
+All notable changes, features, bug fixes, and updates to the **Salesforce & Local Business Lead Generation Engine** repository will be documented in this file.
 
 ---
+
+## [1.2.0] - 2026-10-03
+
+### Added / Updated
+- **Google Maps Local Business Website Lead Collector (`src/collectors/google_maps_collector.py`)**:
+  - Implemented `GoogleMapsLeadCollector` to discover local businesses (plumbing, dining, electrical, dental, auto repair, etc.) that do NOT have a website.
+  - Extracted real exact GPS coordinates (`latitude`, `longitude`) and direct clickable Google Maps search links (`maps_url`).
+  - Filters businesses by high customer rating (>= 4.0⭐) and solid review count (>= 15 reviews) to target high-reputation local businesses needing static/dynamic website development.
+- **Strategy & Factory Pattern Integration (`src/patterns/`)**:
+  - Implemented `GoogleMapsCollectorStrategy` conforming to `ICollectorStrategy`.
+  - Registered strategy in `CollectorFactory` under keys `"google_maps"`, `"gmaps"`, `"local_business"`, and `"no_website"`.
+- **Dedicated Website Leads UI Page (`website_leads.html`)**:
+  - Created a separate UI page (`website_leads.html`) for Google Maps local business website leads while keeping `index.html` intact for Salesforce enterprise leads.
+  - Added header navigation tabs on both pages allowing seamless switching between Salesforce Enterprise Leads and Local Business Website Leads.
+  - Implemented interactive cold outreach pitch preview modal ("✉️ View Pitch") tailored for local business website creation.
+- **Web App Server Routes (`app.py`)**:
+  - Added `/website_leads.html` route.
+  - Added `POST /api/scan/website` endpoint for scanning Google Maps local business website leads.
+  - Added `GET /api/export/website-csv` for downloading `google_maps_website_leads.csv`.
+- **Custom Web Dev Outreach Templates (`src/processing/outreach_generator.py`)**:
+  - Added custom outreach template logic tailored for local businesses without websites, highlighting their Google Maps rating/reviews and offering static landing page or dynamic web app mockups.
+- **Lead Scoring & Verification Adjustments (`src/processing/lead_scorer.py`)**:
+  - Updated `LeadScorer` to verify Google Maps business listings (phone, physical address, 4.0+ rating, 15+ reviews) and assign confidence scores (85% > 60% threshold).
+- **CLI Pipeline (`main.py`)**:
+  - Updated CLI runner to execute Google Maps website lead discovery alongside Salesforce lead scanning and export dual CSV/JSON reports.
+- **Unit Test Suite (`tests/test_lead_generation.py`)**:
+  - Added `test_google_maps_collector_and_strategy()` to verify collector, strategy, factory, scorer, and pitch generator integration (12/12 tests passing).
+
+---
+
+## [1.1.0] - 2026-09-30
+
+### Added / Updated
+- **Architecture Documentation (`ARCHITECTURE.md`)**:
+  - Created comprehensive architectural document outlining system design, Strategy & Factory pattern implementation, layer separation, data flow sequence diagrams, and core invariants.
+- **Architectural Adherence Rules (`.agents/rules/architecture.md` & `GEMINI.md`)**:
+  - Created workspace rule files to enforce design pattern usage (`ICollectorStrategy`, `IScoringStrategy`, `IExporterStrategy`, `CollectorFactory`, `ScoringStrategyFactory`, `ExporterFactory`), confidence score quality gates (> 60%), manual UI scan trigger requirements, and change logging.
 
 ## [1.0.0] - 2026-09-27
 

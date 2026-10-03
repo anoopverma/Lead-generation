@@ -65,12 +65,22 @@ class LeadScorer:
                 lead_map[key] = {
                     "company_name": company,
                     "domain": domain,
+                    "category": lead.get("category", "N/A"),
+                    "rating": lead.get("rating"),
+                    "review_count": lead.get("review_count"),
+                    "phone": lead.get("phone"),
+                    "latitude": lead.get("latitude"),
+                    "longitude": lead.get("longitude"),
+                    "maps_url": lead.get("maps_url"),
+                    "lead_type": lead.get("lead_type"),
+                    "website_status": lead.get("website_status"),
                     "hiring_signal": None,
                     "hiring_count": 0,
                     "location": lead.get("location", "N/A"),
                     "project_description": intent_text,
                     "timeline": lead.get("timeline") or lead.get("target_timeframe", "1-3 Months"),
-                    "budget": lead.get("budget") or lead.get("estimated_budget", "$50k - $150k"),
+                    "budget": lead.get("estimated_budget") or lead.get("budget", "$1,500 - $3,500"),
+                    "estimated_budget": lead.get("estimated_budget") or lead.get("budget", "$1,500 - $3,500"),
                     "contact_title": lead.get("contact_title", "Project Owner"),
                     "contact_details": lead.get("contact_details") or f"{lead.get('contact_title', 'Project Owner')} (contact@{domain})",
                     "tech_footprint": [],
@@ -102,6 +112,15 @@ class LeadScorer:
         for key, lead in lead_map.items():
             confidence = 50  # Base confidence for signal detection
             enrichment = lead.get("enrichment", {})
+
+            # Special verification for Google Maps local business leads
+            if lead.get("lead_type") == "google_maps_no_website" or "Missing Website" in str(lead.get("website_status", "")):
+                if lead.get("phone") or lead.get("location"):
+                    confidence += 20
+                if lead.get("rating", 0) >= 4.0 and lead.get("review_count", 0) >= 15:
+                    confidence += 15
+                    review_bonus = min(int(lead.get("review_count", 0) / 4), 25)
+                    lead["score"] = 65 + review_bonus
 
             # Email format verification (+20% confidence)
             emails = enrichment.get("hunter_email", {}).get("emails_found", [])

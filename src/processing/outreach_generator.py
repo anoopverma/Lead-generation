@@ -18,7 +18,20 @@ class OutreachGenerator:
         intent = lead.get("intent_signal")
         techs = ", ".join(lead.get("tech_footprint", [])) or "Salesforce ecosystem"
 
-        if intent and "RFP" in intent:
+        if lead.get("lead_type") == "google_maps_no_website" or "Missing Website" in str(lead.get("website_status", "")):
+            rating = lead.get("rating", 4.8)
+            reviews = lead.get("review_count", 40)
+            category = lead.get("category", "local business")
+            subject = f"Mobile Website & Online Growth for {company}"
+            body = (
+                f"Hi {lead.get('contact_title', 'Business Owner')},\n\n"
+                f"I came across {company} on Google Maps and noticed your stellar customer reputation ({rating}⭐ with {reviews} reviews in {category}).\n\n"
+                f"However, I noticed that {company} currently does not have an official website. Over 70% of local customers search online before calling or booking.\n\n"
+                f"We build fast, mobile-friendly static landing pages and dynamic web apps tailored specifically for top-rated local businesses to turn search traffic into direct calls and automated bookings.\n\n"
+                f"Would you be open to a 10-minute intro call this week to see a free preliminary website mockup for {company}?\n\n"
+                f"Best regards,\n{consultant_name}"
+            )
+        elif intent and "RFP" in intent:
             subject = f"Response to Salesforce Implementation RFP - {company}"
             body = (
                 f"Hi {lead.get('contact_title', 'Decision Maker')},\n\n"
@@ -29,6 +42,7 @@ class OutreachGenerator:
                 f"Would you be open to a 15-minute intro call this Thursday to discuss how we can support your Salesforce milestone?\n\n"
                 f"Best regards,\n{consultant_name}"
             )
+
         elif role:
             subject = f"Salesforce Consulting & Augmentation support for {role} at {company}"
             body = (
