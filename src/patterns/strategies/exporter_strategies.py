@@ -22,6 +22,17 @@ class JSONExporterStrategy(IExporterStrategy):
         return self.exporter.export_to_json(leads, filename=filename or "salesforce_leads.json")
 
 
+class ExcelExporterStrategy(IExporterStrategy):
+    """Concrete Exporter Strategy for Excel spreadsheet (.xls/.xlsx) output."""
+
+    def __init__(self, output_dir: str = "output"):
+        self.exporter = LeadExporter(output_dir=output_dir)
+
+    def export(self, leads: List[Dict[str, Any]], filename: str = "google_maps_website_leads.xls") -> str:
+        return self.exporter.export_to_excel(leads, filename=filename or "google_maps_website_leads.xls")
+
+
+
 class SalesforceWebToLeadExporterStrategy(IExporterStrategy):
     """Concrete Exporter Strategy for Salesforce CRM Web-to-Lead sync."""
 

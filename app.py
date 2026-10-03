@@ -157,6 +157,23 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 self.send_error(500, "Failed to generate website CSV export file.")
 
+        elif url_path in ["/api/export/website-excel", "/api/export/excel"]:
+            if not SCANNED_WEBSITE_LEADS:
+                SCANNED_WEBSITE_LEADS = run_website_scan()
+
+            excel_exporter = ExporterFactory.create_exporter("excel")
+            filepath = excel_exporter.export(SCANNED_WEBSITE_LEADS, filename="google_maps_website_leads.xls")
+
+            if os.path.exists(filepath):
+                self.send_response(200)
+                self.send_header("Content-Type", "application/vnd.ms-excel")
+                self.send_header("Content-Disposition", 'attachment; filename="google_maps_website_leads.xls"')
+                self.end_headers()
+                with open(filepath, "rb") as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_error(500, "Failed to generate Excel export file.")
+
         else:
             self.send_error(404, "Page Not Found")
 

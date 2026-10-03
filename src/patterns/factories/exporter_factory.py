@@ -3,6 +3,7 @@ from ..strategies.base import IExporterStrategy
 from ..strategies.exporter_strategies import (
     CSVExporterStrategy,
     JSONExporterStrategy,
+    ExcelExporterStrategy,
     SalesforceWebToLeadExporterStrategy
 )
 
@@ -19,6 +20,8 @@ class ExporterFactory:
 
         if fmt in ["csv", "text/csv"]:
             return CSVExporterStrategy(output_dir=output_dir)
+        elif fmt in ["excel", "xlsx", "xls", "application/vnd.ms-excel"]:
+            return ExcelExporterStrategy(output_dir=output_dir)
         elif fmt in ["json", "application/json"]:
             return JSONExporterStrategy(output_dir=output_dir)
         elif fmt in ["salesforce", "webtolead", "crm"]:

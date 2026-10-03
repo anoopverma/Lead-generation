@@ -477,8 +477,11 @@
                 <button id="btn-scan" class="btn" onclick="scanWebsiteLeads()">
                     <span>🔍</span> SCAN MAPS PROSPECTS (200+)
                 </button>
-                <button id="btn-export" class="btn btn-export" onclick="exportWebsiteCSV()">
-                    <span>📥</span> EXPORT TO CSV
+                <button id="btn-export-csv" class="btn btn-export" onclick="exportWebsiteCSV()">
+                    <span>📥</span> EXPORT CSV
+                </button>
+                <button id="btn-export-excel" class="btn" style="background: linear-gradient(135deg, #059669, #10b981); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);" onclick="exportWebsiteExcel()">
+                    <span>📊</span> EXPORT EXCEL
                 </button>
             </div>
         </div>
@@ -816,6 +819,10 @@
 
         function exportWebsiteCSV() {
             window.location.href = '/api/export/website-csv';
+        }
+
+        function exportWebsiteExcel() {
+            window.location.href = '/api/export/website-excel';
         }
     </script>
 </body>
