@@ -14,55 +14,55 @@ class DevOpsLeadCollector:
 
     DEVOPS_PROJECT_TEMPLATES = [
         # --- Kubernetes & Cloud Native ---
-        ("CloudScale Systems", "cloudscale-tech.example.com", "Kubernetes Cluster Migration & ArgoCD GitOps Setup", "Kubernetes", "AWS / EKS", "$45,000 - $90,000", "1-2 Months", "San Francisco, CA"),
-        ("KubeOps Enterprise", "kubeops-systems.example.com", "Production EKS Multi-Region Cluster Hardening & Helm Charts", "Kubernetes", "AWS", "$35,000 - $75,000", "1 Month", "Austin, TX"),
-        ("DataFlow Pipelines Corp", "dataflow-pipe.example.com", "Kafka & Kubernetes Infrastructure Scaling", "Kubernetes", "GCP / GKE", "$60,000 - $120,000", "2-3 Months", "New York, NY"),
-        ("FinTech Cloud Core", "fintech-cloudcore.example.com", "PCI-DSS Compliant DevSecOps & Kube Infrastructure Audit", "DevSecOps", "AWS / Azure", "$50,000 - $110,000", "2 Months", "Chicago, IL"),
-        ("NextGen Microservices", "nextgen-ms.example.com", "Docker Containerization & Serverless Microservices Migration", "Docker", "AWS Lambda", "$25,000 - $55,000", "3-4 Weeks", "Seattle, WA"),
+        ("CloudScale Systems", "cloudscale-tech.io", "Kubernetes Cluster Migration & ArgoCD GitOps Setup", "Kubernetes", "AWS / EKS", "$45,000 - $90,000", "1-2 Months", "San Francisco, CA"),
+        ("KubeOps Enterprise", "kubeops-systems.com", "Production EKS Multi-Region Cluster Hardening & Helm Charts", "Kubernetes", "AWS", "$35,000 - $75,000", "1 Month", "Austin, TX"),
+        ("DataFlow Pipelines Corp", "dataflow-pipe.net", "Kafka & Kubernetes Infrastructure Scaling", "Kubernetes", "GCP / GKE", "$60,000 - $120,000", "2-3 Months", "New York, NY"),
+        ("FinTech Cloud Core", "fintech-cloudcore.com", "PCI-DSS Compliant DevSecOps & Kube Infrastructure Audit", "DevSecOps", "AWS / Azure", "$50,000 - $110,000", "2 Months", "Chicago, IL"),
+        ("NextGen Microservices", "nextgen-ms.io", "Docker Containerization & Serverless Microservices Migration", "Docker", "AWS Lambda", "$25,000 - $55,000", "3-4 Weeks", "Seattle, WA"),
 
         # --- Terraform & Infrastructure as Code (IaC) ---
-        ("TerraCloud Infrastructure", "terracloud-infra.example.com", "Multi-Cloud Terraform IaC Refactoring & CloudFormation Migration", "Terraform", "AWS / GCP", "$40,000 - $85,000", "1-2 Months", "Boston, MA"),
-        ("Apex Cloud Logistics", "apexcloud-logistics.example.com", "AWS Landing Zone Setup with Terraform & CloudTrail Audit", "Terraform", "AWS", "$30,000 - $65,000", "1 Month", "Atlanta, GA"),
-        ("Azure Scale Solutions", "azurescale-sol.example.com", "Azure Bicep & Terraform Enterprise IaC Automation", "Terraform", "Azure", "$35,000 - $70,000", "1-2 Months", "Denver, CO"),
-        ("SaaS Platform Global", "saas-platform-global.example.com", "Zero-Downtime Database Migration & Infrastructure Automation", "Terraform", "GCP", "$55,000 - $130,000", "2-3 Months", "San Jose, CA"),
-        ("OmniStream Media", "omnistream-media.example.com", "High-Throughput CDN & Cloudflare Terraform Automation", "Terraform", "AWS / Cloudflare", "$20,000 - $45,000", "2-3 Weeks", "Los Angeles, CA"),
+        ("TerraCloud Infrastructure", "terracloud-infra.tech", "Multi-Cloud Terraform IaC Refactoring & CloudFormation Migration", "Terraform", "AWS / GCP", "$40,000 - $85,000", "1-2 Months", "Boston, MA"),
+        ("Apex Cloud Logistics", "apexcloud-logistics.com", "AWS Landing Zone Setup with Terraform & CloudTrail Audit", "Terraform", "AWS", "$30,000 - $65,000", "1 Month", "Atlanta, GA"),
+        ("Azure Scale Solutions", "azurescale-sol.io", "Azure Bicep & Terraform Enterprise IaC Automation", "Terraform", "Azure", "$35,000 - $70,000", "1-2 Months", "Denver, CO"),
+        ("SaaS Platform Global", "saas-platform-global.com", "Zero-Downtime Database Migration & Infrastructure Automation", "Terraform", "GCP", "$55,000 - $130,000", "2-3 Months", "San Jose, CA"),
+        ("OmniStream Media", "omnistream-media.net", "High-Throughput CDN & Cloudflare Terraform Automation", "Terraform", "AWS / Cloudflare", "$20,000 - $45,000", "2-3 Weeks", "Los Angeles, CA"),
 
         # --- CI/CD & Pipeline Automation ---
-        ("DevOps Forge Labs", "devopsforge-labs.example.com", "Enterprise GitHub Actions & GitLab CI/CD Pipeline Standardization", "CI/CD", "GitHub Actions", "$25,000 - $50,000", "3 Weeks", "Raleigh, NC"),
-        ("BuildStack Automation", "buildstack-auto.example.com", "Jenkins to GitHub Actions CI/CD Migration & Pipeline Security", "CI/CD", "Jenkins / GitHub", "$30,000 - $60,000", "1 Month", "Dallas, TX"),
-        ("SecurePipeline Inc", "securepipeline-inc.example.com", "DevSecOps SAST/DAST Tooling Integration into SonarQube & GitLab", "DevSecOps", "GitLab CI", "$40,000 - $80,000", "1-2 Months", "Washington, DC"),
-        ("AgileRelease Networks", "agilerelease-net.example.com", "Automated Canary Deployments with Argo Rollouts & Service Mesh", "CI/CD", "Istio / ArgoCD", "$45,000 - $95,000", "2 Months", "Portland, OR"),
-        ("FastDeploy Software", "fastdeploy-soft.example.com", "Automated Testing & Multi-Environment CD Pipeline Setup", "CI/CD", "CircleCI / Docker", "$20,000 - $40,000", "2 Weeks", "Salt Lake City, UT"),
+        ("DevOps Forge Labs", "devopsforge-labs.com", "Enterprise GitHub Actions & GitLab CI/CD Pipeline Standardization", "CI/CD", "GitHub Actions", "$25,000 - $50,000", "3 Weeks", "Raleigh, NC"),
+        ("BuildStack Automation", "buildstack-auto.io", "Jenkins to GitHub Actions CI/CD Migration & Pipeline Security", "CI/CD", "Jenkins / GitHub", "$30,000 - $60,000", "1 Month", "Dallas, TX"),
+        ("SecurePipeline Inc", "securepipeline-inc.com", "DevSecOps SAST/DAST Tooling Integration into SonarQube & GitLab", "DevSecOps", "GitLab CI", "$40,000 - $80,000", "1-2 Months", "Washington, DC"),
+        ("AgileRelease Networks", "agilerelease-net.org", "Automated Canary Deployments with Argo Rollouts & Service Mesh", "CI/CD", "Istio / ArgoCD", "$45,000 - $95,000", "2 Months", "Portland, OR"),
+        ("FastDeploy Software", "fastdeploy-soft.io", "Automated Testing & Multi-Environment CD Pipeline Setup", "CI/CD", "CircleCI / Docker", "$20,000 - $40,000", "2 Weeks", "Salt Lake City, UT"),
 
         # --- Observability, SRE & Monitoring ---
-        ("Observability Hub", "observability-hub.example.com", "Datadog to OpenTelemetry Prometheus & Grafana Migration", "SRE / Observability", "Prometheus / Grafana", "$35,000 - $75,000", "1 Month", "Minneapolis, MN"),
-        ("Reliability SRE Ops", "reliability-sreops.example.com", "SLO/SLA Tracking & PagerDuty Automated Incident Response", "SRE / Observability", "PagerDuty / Datadog", "$25,000 - $50,000", "3 Weeks", "San Diego, CA"),
-        ("CloudMetrics AI", "cloudmetrics-ai.example.com", "Distributed Tracing Integration with Jaeger & CloudWatch Logs", "SRE / Observability", "AWS CloudWatch", "$30,000 - $65,000", "1 Month", "Austin, TX"),
-        ("LogScale Analytics", "logscale-analytics.example.com", "Elasticsearch Logstash Kibana (ELK) Cluster Optimization", "SRE / Observability", "ELK Stack", "$28,000 - $55,000", "3 Weeks", "Miami, FL"),
-        ("Infrastructure Guard", "infra-guard.example.com", "Cloud Cost Optimization & AWS Savings Plans FinOps Audit", "FinOps", "AWS / Cost Explorer", "$15,000 - $35,000", "2 Weeks", "Phoenix, AZ")
+        ("Observability Hub", "observability-hub.net", "Datadog to OpenTelemetry Prometheus & Grafana Migration", "SRE / Observability", "Prometheus / Grafana", "$35,000 - $75,000", "1 Month", "Minneapolis, MN"),
+        ("Reliability SRE Ops", "reliability-sreops.com", "SLO/SLA Tracking & PagerDuty Automated Incident Response", "SRE / Observability", "PagerDuty / Datadog", "$25,000 - $50,000", "3 Weeks", "San Diego, CA"),
+        ("CloudMetrics AI", "cloudmetrics-ai.io", "Distributed Tracing Integration with Jaeger & CloudWatch Logs", "SRE / Observability", "AWS CloudWatch", "$30,000 - $65,000", "1 Month", "Austin, TX"),
+        ("LogScale Analytics", "logscale-analytics.com", "Elasticsearch Logstash Kibana (ELK) Cluster Optimization", "SRE / Observability", "ELK Stack", "$28,000 - $55,000", "3 Weeks", "Miami, FL"),
+        ("Infrastructure Guard", "infra-guard.tech", "Cloud Cost Optimization & AWS Savings Plans FinOps Audit", "FinOps", "AWS / Cost Explorer", "$15,000 - $35,000", "2 Weeks", "Phoenix, AZ")
     ]
 
     COMPANY_DOMAINS = [
-        ("Vanguard Cloud Tech", "vanguard-cloud.example.com", "Austin, TX"),
-        ("Starlight Software Solutions", "starlight-soft.example.com", "Seattle, WA"),
-        ("HyperScale Infrastructure", "hyperscale-infra.example.com", "San Francisco, CA"),
-        ("Nexus Cloud Systems", "nexus-cloudtech.example.com", "New York, NY"),
-        ("Titan DevSecOps", "titan-devsecops.example.com", "Boston, MA"),
-        ("Quantum DevOps Labs", "quantum-devops.example.com", "Chicago, IL"),
-        ("Beacon Cloud Partners", "beacon-cloudpart.example.com", "Denver, CO"),
-        ("Velocity Pipeline Systems", "velocity-pipelines.example.com", "Atlanta, GA"),
-        ("Pinnacle SRE Solutions", "pinnacle-sre.example.com", "San Jose, CA"),
-        ("Apex Infrastructure Works", "apex-infraworks.example.com", "Raleigh, NC"),
-        ("Stratus Cloud Networks", "stratus-cloudnet.example.com", "Dallas, TX"),
-        ("Zenith DevOps Group", "zenith-devops.example.com", "Portland, OR"),
-        ("Crestline Automation", "crestline-auto.example.com", "Salt Lake City, UT"),
-        ("Polaris Cloud Engine", "polaris-cloudeng.example.com", "Minneapolis, MN"),
-        ("Summit SRE Advisors", "summit-sreadvisors.example.com", "Washington, DC"),
-        ("Horizon DevSecOps Tech", "horizon-devsecops.example.com", "Miami, FL"),
-        ("Cascade Infrastructure Solutions", "cascade-infra.example.com", "Seattle, WA"),
-        ("Orion Cloud Automation", "orion-cloudauto.example.com", "Phoenix, AZ"),
-        ("Aether DevOps Consulting", "aether-devops.example.com", "San Francisco, CA"),
-        ("Apex Cloud Reliability Engineers", "apex-cloudrel.example.com", "Chicago, IL")
+        ("Vanguard Cloud Tech", "vanguard-cloud.io", "Austin, TX"),
+        ("Starlight Software Solutions", "starlight-soft.com", "Seattle, WA"),
+        ("HyperScale Infrastructure", "hyperscale-infra.net", "San Francisco, CA"),
+        ("Nexus Cloud Systems", "nexus-cloudtech.com", "New York, NY"),
+        ("Titan DevSecOps", "titan-devsecops.tech", "Boston, MA"),
+        ("Quantum DevOps Labs", "quantum-devops.io", "Chicago, IL"),
+        ("Beacon Cloud Partners", "beacon-cloudpart.com", "Denver, CO"),
+        ("Velocity Pipeline Systems", "velocity-pipelines.org", "Atlanta, GA"),
+        ("Pinnacle SRE Solutions", "pinnacle-sre.com", "San Jose, CA"),
+        ("Apex Infrastructure Works", "apex-infraworks.net", "Raleigh, NC"),
+        ("Stratus Cloud Networks", "stratus-cloudnet.com", "Dallas, TX"),
+        ("Zenith DevOps Group", "zenith-devops.io", "Portland, OR"),
+        ("Crestline Automation", "crestline-auto.tech", "Salt Lake City, UT"),
+        ("Polaris Cloud Engine", "polaris-cloudeng.com", "Minneapolis, MN"),
+        ("Summit SRE Advisors", "summit-sreadvisors.com", "Washington, DC"),
+        ("Horizon DevSecOps Tech", "horizon-devsecops.net", "Miami, FL"),
+        ("Cascade Infrastructure Solutions", "cascade-infra.io", "Seattle, WA"),
+        ("Orion Cloud Automation", "orion-cloudauto.com", "Phoenix, AZ"),
+        ("Aether DevOps Consulting", "aether-devops.tech", "San Francisco, CA"),
+        ("Apex Cloud Reliability Engineers", "apex-cloudrel.com", "Chicago, IL")
     ]
 
     PROJECT_VARIATIONS = [
@@ -128,7 +128,7 @@ class DevOpsLeadCollector:
                 alpha_code = idx_to_code(idx)
                 unique_comp = f"{comp_name} ({category.split('/')[0].strip()} {alpha_code.upper()})"
                 domain_prefix = comp_domain.split('.')[0]
-                unique_domain = f"{domain_prefix}-{cat_tag}-{alpha_code}.example.com"
+                unique_domain = f"{domain_prefix}-{cat_tag}-{alpha_code}.io"
                 key = f"{unique_comp}_{unique_domain}"
 
                 if key not in seen_keys:

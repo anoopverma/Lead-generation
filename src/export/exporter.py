@@ -166,7 +166,7 @@ class LeadExporter:
             "oid": oid,
             "company": lead.get("company_name", "Unknown Company"),
             "last_name": lead.get("contact_title", "Salesforce Project Lead"),
-            "email": f"info@{lead.get('domain', 'example.com')}",
+            "email": f"info@{lead.get('domain', 'salesforce-lead.com')}",
             "description": f"Lead Score: {lead.get('score')} ({lead.get('grade')}). Signal: {lead.get('intent_signal') or lead.get('hiring_signal')}",
             "lead_source": "Salesforce Lead Generation Engine"
         }

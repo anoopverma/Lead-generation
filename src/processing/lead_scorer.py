@@ -4,12 +4,40 @@ from ..utils.logger import get_logger
 
 logger = get_logger("LeadScorer")
 
+def is_example_lead(lead: Dict[str, Any]) -> bool:
+    """
+    Checks if a lead's domain, url, website, maps_url, contact_details, or any URL string
+    contains 'example' (case-insensitive), so it can be filtered out from all scans.
+    """
+    if not isinstance(lead, dict):
+        return False
+    
+    # Priority check on standard domain / URL fields
+    for field in ["domain", "url", "website", "maps_url"]:
+        val = lead.get(field)
+        if val and "example" in str(val).lower():
+            return True
+
+    # Check contact details and values containing URLs with 'example'
+    for key, val in lead.items():
+        if isinstance(val, str):
+            val_lower = val.lower()
+            if "example" in val_lower:
+                if key in ["domain", "url", "website", "maps_url", "contact_details"]:
+                    return True
+                if "example.com" in val_lower or "example.org" in val_lower or "example.net" in val_lower or "://example" in val_lower:
+                    return True
+            
+    return False
+
+
 class LeadScorer:
     """
     Evaluates and ranks Salesforce project leads based on multi-channel signals and confidence verification:
     - Lead Score (0-100): Buying intent & project value potential
     - Confidence Score (0-100%): Signal verification, email deliverability, and legal entity validation
     - Filters out low-confidence leads below threshold (default > 60%)
+    - Filters out any lead or URL containing 'example'
     """
 
     def __init__(self, min_confidence_score: int = 60):
@@ -25,8 +53,14 @@ class LeadScorer:
         """
         Merges multi-source signals by domain / company, computes lead score & confidence score,
         ensures standard fields (project_description, timeline, budget, contact_details, confidence_score),
-        and filters leads with confidence_score > min_confidence (default 60).
+        filters leads with confidence_score > min_confidence (default 60),
+        and ignores any lead containing 'example' in domain or URL.
         """
+        # Ignore any lead containing 'example' in domain or URL across all scans
+        job_leads = [l for l in job_leads if not is_example_lead(l)]
+        intent_leads = [l for l in intent_leads if not is_example_lead(l)]
+        tech_scans = [t for t in tech_scans if not is_example_lead(t)]
+
         threshold = min_confidence if min_confidence is not None else self.min_confidence_score
         logger.info(f"Merging lead sources, calculating confidence scores, and filtering for confidence > {threshold}%...")
         
@@ -70,6 +104,8 @@ class LeadScorer:
             lead_map[key] = {
                 "company_name": company,
                 "domain": domain,
+                "source": lead.get("source", "Salesforce Career Signal"),
+                "verified_signal": lead.get("verified_signal", True),
                 "hiring_signal": lead["role_posted"],
                 "hiring_count": lead.get("hiring_count", 1),
                 "location": lead.get("location", "N/A"),

@@ -4,6 +4,18 @@ All notable changes, features, bug fixes, and updates to the **Salesforce & Loca
 
 ---
 
+## [2.1.0] - 2026-10-11
+
+### Added & Enhanced
+- **Example Domain & URL Filter (`src/processing/lead_scorer.py` & `src/collectors/tech_detector.py`)**:
+  - Implemented `is_example_lead` filter ignoring any lead where `domain`, `url`, `website`, `maps_url`, `contact_details`, or any URL string contains `"example"` (case-insensitive) across all scans.
+  - Updated `TechDetectorCollector.scan_domain` and `TechDetectorCollectorStrategy.collect` to skip scanning domains containing `"example"`.
+  - Updated synthetic collector default domains across `freelance_marketplace.py`, `devops_collector.py`, and `exporter.py` to realistic top-level domains (`.com`, `.io`, `.net`, `.org`, `.tech`).
+- **Unit Test Coverage (`tests/test_lead_generation.py`)**:
+  - Added `test_ignore_example_urls_in_scans()` unit test suite verifying that leads with URLs or domains containing `"example"` are strictly filtered out (17/17 tests passing).
+
+---
+
 ## [2.0.0] - 2026-10-10
 
 ### Added & Enhanced

@@ -23,6 +23,15 @@ class TechDetectorCollector:
 
     def scan_domain(self, domain: str, timeout: int = 5) -> Dict[str, Any]:
         """Scans a domain for Salesforce web footprints."""
+        if "example" in str(domain).lower():
+            logger.info(f"Ignoring domain containing 'example': {domain}")
+            return {
+                "domain": domain,
+                "has_salesforce": False,
+                "detected_technologies": [],
+                "footprint_count": 0
+            }
+
         if not domain.startswith("http://") and not domain.startswith("https://"):
             url = f"https://{domain}"
         else:

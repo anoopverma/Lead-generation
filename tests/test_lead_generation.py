@@ -20,7 +20,7 @@ def test_job_signal_collector():
 
 def test_tech_detector_collector():
     collector = TechDetectorCollector()
-    res = collector.scan_domain("acmehealthtech.example.com")
+    res = collector.scan_domain("acmehealthtech.com")
     assert isinstance(res, dict)
     assert "has_salesforce" in res
     assert "detected_technologies" in res
@@ -34,7 +34,7 @@ def test_intent_finder_collector():
 
 def test_free_tier_enrichment_collector():
     collector = FreeTierEnrichmentCollector()
-    lead = {"company_name": "Acme Tech", "domain": "acmetech.example.com"}
+    lead = {"company_name": "Acme Tech", "domain": "acmetech.io"}
     enriched = collector.enrich_lead_full(lead)
 
     assert "enrichment" in enriched
@@ -51,7 +51,7 @@ def test_lead_scorer_and_outreach():
     intent_leads = intent_collector.find_intent_leads()
     
     tech_collector = TechDetectorCollector()
-    tech_scans = [tech_collector.scan_domain("acmehealthtech.example.com")]
+    tech_scans = [tech_collector.scan_domain("acmehealthtech.com")]
 
     enrichment_collector = FreeTierEnrichmentCollector()
     for lead in job_leads:
@@ -75,7 +75,7 @@ def test_confidence_filtering():
     scorer = LeadScorer(min_confidence_score=60)
     job_leads = [{
         "company_name": "Low Conf Inc",
-        "domain": "lowconf.example.com",
+        "domain": "lowconf.com",
         "role_posted": "Salesforce Admin",
         "hiring_count": 1
     }]
@@ -85,6 +85,31 @@ def test_confidence_filtering():
     # Unenriched lead has base confidence 50% <= 60%, so it should be filtered out
     filtered_leads = scorer.score_and_merge_leads(job_leads, tech_scans, intent_leads, min_confidence=60)
     assert len(filtered_leads) == 0
+
+def test_ignore_example_urls_in_scans():
+    scorer = LeadScorer(min_confidence_score=50)
+    job_leads = [
+        {"company_name": "Example Corp", "domain": "acme.example.com", "role_posted": "Salesforce Admin", "hiring_count": 2, "verified_signal": True},
+        {"company_name": "Valid Corp", "domain": "validcorp.com", "role_posted": "Salesforce Developer", "hiring_count": 2, "verified_signal": True}
+    ]
+    intent_leads = [
+        {"company_name": "Test LLC", "domain": "test.com", "maps_url": "https://maps.google.com/example_test", "verified_signal": True},
+        {"company_name": "Good LLC", "domain": "goodllc.com", "verified_signal": True}
+    ]
+    tech_scans = []
+
+    results = scorer.score_and_merge_leads(job_leads, tech_scans, intent_leads, min_confidence=50)
+    
+    # Verify leads containing 'example' in domain or url are strictly ignored
+    domains = [r.get("domain") for r in results]
+    assert "acme.example.com" not in domains
+    assert "validcorp.com" in domains
+
+    # Verify tech collector ignores example domains
+    tech_collector = TechDetectorCollector()
+    scan_res = tech_collector.scan_domain("test.example.com")
+    assert scan_res["has_salesforce"] is False
+    assert len(scan_res["detected_technologies"]) == 0
 
 def test_exporter(tmp_path):
     exporter = LeadExporter(output_dir=str(tmp_path))
@@ -114,7 +139,7 @@ def test_design_patterns_strategy_and_factory(tmp_path):
     job_leads = job_strat.collect()
     intent_leads = intent_strat.collect()
     enrichment_strat.collect(leads=job_leads + intent_leads)
-    tech_scans = tech_strat.collect(domains=["acme.example.com"])
+    tech_scans = tech_strat.collect(domains=["acme.com"])
 
     assert len(job_leads) > 0
     assert len(intent_leads) > 0
