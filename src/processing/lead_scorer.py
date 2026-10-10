@@ -101,11 +101,9 @@ class LeadScorer:
             domain = lead.get("domain", "")
             key = compute_key(lead)
 
-            lead_map[key] = {
+            item = {
                 "company_name": company,
                 "domain": domain,
-                "source": lead.get("source", "Salesforce Career Signal"),
-                "verified_signal": lead.get("verified_signal", True),
                 "hiring_signal": lead["role_posted"],
                 "hiring_count": lead.get("hiring_count", 1),
                 "location": lead.get("location", "N/A"),
@@ -119,6 +117,11 @@ class LeadScorer:
                 "enrichment": lead.get("enrichment", {}),
                 "score": 40 + min(lead.get("hiring_count", 1) * 5, 15)  # 40 - 55 pts for hiring
             }
+            if "source" in lead:
+                item["source"] = lead["source"]
+            if "verified_signal" in lead:
+                item["verified_signal"] = lead["verified_signal"]
+            lead_map[key] = item
 
         # 2. Process Intent & Freelance Marketplace Signals
         for lead in intent_leads:
