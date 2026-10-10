@@ -11,6 +11,8 @@ All notable changes, features, bug fixes, and updates to the **Salesforce & Loca
   - Implemented `is_example_lead` filter ignoring any lead where `domain`, `url`, `website`, `maps_url`, `contact_details`, or any URL string contains `"example"` (case-insensitive) across all scans.
   - Updated `TechDetectorCollector.scan_domain` and `TechDetectorCollectorStrategy.collect` to skip scanning domains containing `"example"`.
   - Updated synthetic collector default domains across `freelance_marketplace.py`, `devops_collector.py`, and `exporter.py` to realistic top-level domains (`.com`, `.io`, `.net`, `.org`, `.tech`).
+- **Security & Git Exclusions (`.gitignore`)**:
+  - Ensured `.env` secrets file is explicitly listed in `.gitignore` and excluded from git tracking while maintaining `.env.example` as a template.
 - **Unit Test Coverage (`tests/test_lead_generation.py`)**:
   - Added `test_ignore_example_urls_in_scans()` unit test suite verifying that leads with URLs or domains containing `"example"` are strictly filtered out (17/17 tests passing).
 
