@@ -149,6 +149,30 @@ class IndiaCollectorStrategy(ICollectorStrategy):
         self.collector = IndiaLeadCollector()
 
     def collect(self, **kwargs) -> List[Dict[str, Any]]:
-        return self.collector.collect_india_leads()
+        return self.collector.collect_leads()
+
+
+class DelhiNCRCollectorStrategy(ICollectorStrategy):
+    """Concrete Collector Strategy for Delhi-NCR local business website opportunities."""
+
+    def __init__(self, config: Dict[str, Any] = None):
+        from ...collectors.delhi_ncr_collector import DelhiNCRLeadCollector
+        self.collector = DelhiNCRLeadCollector()
+
+    def collect(self, **kwargs) -> List[Dict[str, Any]]:
+        return self.collector.collect_leads()
+
+
+class DevOpsCollectorStrategy(ICollectorStrategy):
+    """Concrete Collector Strategy for DevOps & Cloud Infrastructure project opportunities."""
+
+    def __init__(self, config: Dict[str, Any] = None):
+        from ...collectors.devops_collector import DevOpsLeadCollector
+        self.collector = DevOpsLeadCollector()
+
+    def collect(self, **kwargs) -> List[Dict[str, Any]]:
+        return self.collector.collect_leads()
+
+
 
 

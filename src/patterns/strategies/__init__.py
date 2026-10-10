@@ -7,7 +7,8 @@ from .collector_strategies import (
     LinkedInCollectorStrategy,
     LinkedInDirectoryScraperStrategy,
     LinkdAPIDiscoverStrategy,
-    FreelanceMarketplaceCollectorStrategy
+    FreelanceMarketplaceCollectorStrategy,
+    DevOpsCollectorStrategy
 )
 from .scoring_strategies import (
     DefaultWeightedScoringStrategy,
@@ -31,9 +32,11 @@ __all__ = [
     "LinkedInDirectoryScraperStrategy",
     "LinkdAPIDiscoverStrategy",
     "FreelanceMarketplaceCollectorStrategy",
+    "DevOpsCollectorStrategy",
     "DefaultWeightedScoringStrategy",
     "StrictVerificationScoringStrategy",
     "CSVExporterStrategy",
     "JSONExporterStrategy",
     "SalesforceWebToLeadExporterStrategy"
 ]
+

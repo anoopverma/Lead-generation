@@ -205,7 +205,7 @@ def test_google_maps_collector_and_strategy():
 def test_india_collector_and_strategy():
     from src.collectors.india_collector import IndiaLeadCollector
     collector = IndiaLeadCollector()
-    leads = collector.collect_india_leads()
+    leads = collector.collect_leads()
     assert isinstance(leads, list)
     assert len(leads) >= 200
     assert leads[0]["country"] == "India"
@@ -218,6 +218,62 @@ def test_india_collector_and_strategy():
     scored = scoring_strat.score_and_filter([], [], strat_leads, min_confidence=60)
     assert len(scored) >= 200
     assert scored[0]["confidence_score"] > 60
+
+
+def test_delhi_ncr_collector_and_strategy():
+    from src.collectors.delhi_ncr_collector import DelhiNCRLeadCollector
+    collector = DelhiNCRLeadCollector()
+    leads = collector.collect_leads()
+    assert isinstance(leads, list)
+    assert len(leads) >= 200
+    assert leads[0]["city_region"] == "Delhi-NCR"
+
+    delhi_strat = CollectorFactory.create_collector("delhi_ncr")
+    strat_leads = delhi_strat.collect()
+    assert len(strat_leads) >= 200
+
+    scoring_strat = ScoringStrategyFactory.create_scoring_strategy("default")
+    scored = scoring_strat.score_and_filter([], [], strat_leads, min_confidence=60)
+    assert len(scored) >= 200
+    assert scored[0]["confidence_score"] > 60
+
+
+def test_devops_collector_and_strategy():
+    from src.collectors.devops_collector import DevOpsLeadCollector
+    collector = DevOpsLeadCollector()
+    leads = collector.collect_leads()
+    assert isinstance(leads, list)
+    assert len(leads) >= 200
+    assert leads[0]["lead_type"] == "devops_project"
+
+    devops_strat = CollectorFactory.create_collector("devops")
+    strat_leads = devops_strat.collect()
+    assert len(strat_leads) >= 200
+
+    scoring_strat = ScoringStrategyFactory.create_scoring_strategy("default")
+    scored = scoring_strat.score_and_filter([], [], strat_leads, min_confidence=60)
+    assert len(scored) >= 200
+    assert scored[0]["confidence_score"] > 60
+
+    pitch_gen = OutreachGenerator()
+    pitch = pitch_gen.generate_pitch(scored[0])
+    assert "DevOps" in pitch["subject"] or "Infrastructure" in pitch["subject"]
+    assert "Kubernetes" in pitch["body"] or "CI/CD" in pitch["body"] or "Terraform" in pitch["body"]
+
+
+def test_auth_and_env_loading():
+    from app import load_env_file, verify_session, generate_session_token, ADMIN_USERNAME, ADMIN_PASSWORD
+    load_env_file()
+
+    assert ADMIN_USERNAME is not None
+    assert ADMIN_PASSWORD is not None
+
+    token = generate_session_token("admin")
+    assert verify_session(f"session_id={token}") is True
+    assert verify_session("session_id=invalid_token") is False
+
+
+
 
 
 

@@ -6,6 +6,7 @@ from .strategies import (
     IntentSignalCollectorStrategy,
     TechDetectorCollectorStrategy,
     FreeTierEnrichmentCollectorStrategy,
+    DevOpsCollectorStrategy,
     DefaultWeightedScoringStrategy,
     StrictVerificationScoringStrategy,
     CSVExporterStrategy,
@@ -26,6 +27,7 @@ __all__ = [
     "IntentSignalCollectorStrategy",
     "TechDetectorCollectorStrategy",
     "FreeTierEnrichmentCollectorStrategy",
+    "DevOpsCollectorStrategy",
     "DefaultWeightedScoringStrategy",
     "StrictVerificationScoringStrategy",
     "CSVExporterStrategy",
@@ -35,3 +37,4 @@ __all__ = [
     "ScoringStrategyFactory",
     "ExporterFactory"
 ]
+

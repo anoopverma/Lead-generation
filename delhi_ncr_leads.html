@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🇮🇳 India Salesforce & Website Lead Intelligence</title>
-    <meta name="description" content="Discover 200+ India-exclusive Salesforce enterprise project opportunities and local business website leads with instant JSON cache and export.">
+    <title>🏛️ Delhi-NCR Local Business Website Intelligence</title>
+    <meta name="description" content="Discover 200+ local business website opportunities in New Delhi, Old Delhi, Gurugram, Noida, Ghaziabad & Faridabad.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #090d16;
             --panel-bg: #131c2e;
             --panel-hover: #1a263e;
-            --accent-india: #f97316;
-            --accent-india-gradient: linear-gradient(135deg, #f97316, #dc2626);
+            --accent-delhi: #e11d48;
+            --accent-delhi-gradient: linear-gradient(135deg, #e11d48, #9333ea);
             --accent-green: #10b981;
             --accent-blue: #0284c7;
             --accent-amber: #f59e0b;
-            --accent-purple: #8b5cf6;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --card-border: #24344d;
@@ -66,9 +65,9 @@
 
         .nav-tab.active {
             color: white;
-            background: var(--accent-india-gradient);
-            border-color: rgba(249, 115, 22, 0.4);
-            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+            background: var(--accent-delhi-gradient);
+            border-color: rgba(225, 29, 72, 0.4);
+            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
         }
 
         .header {
@@ -89,13 +88,13 @@
         }
 
         .logo-badge {
-            background: var(--accent-india-gradient);
+            background: var(--accent-delhi-gradient);
             padding: 0.75rem 1.25rem;
             border-radius: 12px;
             font-weight: 800;
             font-size: 1.4rem;
             color: white;
-            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
+            box-shadow: 0 4px 20px rgba(225, 29, 72, 0.4);
             letter-spacing: -0.02em;
         }
 
@@ -110,7 +109,7 @@
         }
 
         .btn {
-            background: var(--accent-india-gradient);
+            background: var(--accent-delhi-gradient);
             color: white;
             border: none;
             padding: 0.75rem 1.4rem;
@@ -123,12 +122,12 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+            box-shadow: 0 6px 20px rgba(225, 29, 72, 0.5);
         }
 
         .btn-export {
@@ -163,12 +162,12 @@
 
         .stat-card:hover { transform: translateY(-3px); }
 
-        .stat-val { font-size: 2.2rem; font-weight: 800; color: var(--accent-india); margin-top: 0.5rem; }
+        .stat-val { font-size: 2.2rem; font-weight: 800; color: var(--accent-delhi); margin-top: 0.5rem; }
         .stat-lbl { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
 
         .status-banner {
-            background: rgba(249, 115, 22, 0.1);
-            border: 1px solid var(--accent-india);
+            background: rgba(225, 29, 72, 0.1);
+            border: 1px solid var(--accent-delhi);
             padding: 1rem 1.5rem;
             border-radius: 8px;
             margin-bottom: 1.5rem;
@@ -229,10 +228,10 @@
         }
 
         .filter-input:focus, .filter-select:focus {
-            border-color: var(--accent-india);
+            border-color: var(--accent-delhi);
         }
 
-        .filter-input { width: 240px; }
+        .filter-input { width: 250px; }
 
         .btn-clear {
             background: transparent;
@@ -259,36 +258,37 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--card-border); }
-        th { 
-            background: #0c1424; 
-            color: var(--text-muted); 
-            font-weight: 700; 
-            font-size: 0.8rem; 
-            text-transform: uppercase; 
-            letter-spacing: 0.05em;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #0d1524;
+            padding: 1rem 1.2rem;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            font-weight: 700;
+            border-bottom: 1px solid var(--card-border);
             user-select: none;
         }
 
-        th.sortable {
-            cursor: pointer;
-            transition: color 0.2s, background-color 0.2s;
+        th.sortable { cursor: pointer; }
+        th.sortable:hover { color: var(--accent-delhi); background: #131d30; }
+
+        .sort-arrow { display: inline-block; margin-left: 0.25rem; font-size: 0.75rem; }
+
+        td {
+            padding: 1.1rem 1.2rem;
+            border-bottom: 1px solid rgba(36, 52, 77, 0.5);
+            font-size: 0.9rem;
+            vertical-align: middle;
         }
 
-        th.sortable:hover {
-            color: var(--text-main);
-            background: #152238;
-        }
-
-        .sort-arrow {
-            display: inline-block;
-            margin-left: 0.3rem;
-            font-size: 0.75rem;
-            color: var(--accent-india);
-        }
-
-        tr:hover { background: var(--panel-hover); }
+        tr:hover { background-color: var(--panel-hover); }
 
         .badge-conf {
             background: rgba(16, 185, 129, 0.15);
@@ -304,32 +304,22 @@
         }
 
         .badge-score {
-            background: rgba(249, 115, 22, 0.15);
-            color: #fb923c;
-            border: 1px solid var(--accent-india);
+            background: rgba(225, 29, 72, 0.15);
+            color: #fb7185;
+            border: 1px solid var(--accent-delhi);
             padding: 0.35rem 0.75rem;
             border-radius: 20px;
             font-weight: 700;
             font-size: 0.85rem;
         }
 
-        .badge-type {
-            background: rgba(139, 92, 246, 0.15);
-            color: #c084fc;
-            border: 1px solid #8b5cf6;
+        .badge-delhi {
+            background: rgba(225, 29, 72, 0.15);
+            color: #f43f5e;
+            border: 1px solid #f43f5e;
             padding: 0.3rem 0.6rem;
             border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .badge-india {
-            background: rgba(249, 115, 22, 0.15);
-            color: #f97316;
-            border: 1px solid #f97316;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-weight: 700;
         }
 
@@ -360,12 +350,12 @@
         }
 
         .btn-page:hover:not(:disabled) {
-            border-color: var(--accent-india);
-            color: var(--accent-india);
+            border-color: var(--accent-delhi);
+            color: var(--accent-delhi);
         }
 
         .btn-page.active {
-            background: var(--accent-india-gradient);
+            background: var(--accent-delhi-gradient);
             color: white;
             border-color: transparent;
         }
@@ -376,7 +366,7 @@
         }
 
         .btn-pitch {
-            background: linear-gradient(135deg, #f97316, #ea580c);
+            background: linear-gradient(135deg, #e11d48, #be123c);
             color: white;
             border: none;
             padding: 0.45rem 0.85rem;
@@ -391,7 +381,7 @@
         }
 
         .btn-pitch:hover {
-            box-shadow: 0 3px 12px rgba(249, 115, 22, 0.5);
+            box-shadow: 0 3px 12px rgba(225, 29, 72, 0.5);
             transform: translateY(-1px);
         }
 
@@ -427,9 +417,9 @@
             padding-bottom: 0.75rem;
         }
 
-        .modal-header h3 { font-size: 1.2rem; font-weight: 700; color: var(--accent-india); }
+        .modal-header h3 { font-size: 1.2rem; font-weight: 700; color: var(--accent-delhi); }
         .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
-        .pitch-subject { font-weight: 700; font-size: 0.95rem; margin-bottom: 1rem; color: #fed7aa; }
+        .pitch-subject { font-weight: 700; font-size: 0.95rem; margin-bottom: 1rem; color: #fecdd3; }
         .pitch-body { background: #0b1220; border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 8px; font-size: 0.9rem; line-height: 1.6; color: var(--text-main); white-space: pre-line; max-height: 350px; overflow-y: auto; }
     </style>
 </head>
@@ -444,10 +434,10 @@
             <a href="/website_leads.html" class="nav-tab">
                 <span>🗺️</span> Local Business Website Leads (200+)
             </a>
-            <a href="/india_leads.html" class="nav-tab active">
+            <a href="/india_leads.html" class="nav-tab">
                 <span>🇮🇳</span> India Opportunities (200+)
             </a>
-            <a href="/delhi_ncr_leads.html" class="nav-tab">
+            <a href="/delhi_ncr_leads.html" class="nav-tab active">
                 <span>🏛️</span> Delhi-NCR Leads (200+)
             </a>
             <a href="/devops_leads.html" class="nav-tab">
@@ -457,23 +447,23 @@
 
         <div class="header">
             <div class="logo-title">
-                <div class="logo-badge">🇮🇳 India Leads</div>
+                <div class="logo-badge">🏛️ Delhi-NCR</div>
                 <div>
-                    <h1>India Salesforce & Website Lead Intelligence</h1>
-                    <p class="subtitle">Discover 200+ India-exclusive Salesforce enterprise implementations & local business website opportunities</p>
+                    <h1>Delhi-NCR Local Business Website Intelligence</h1>
+                    <p class="subtitle">Discover 200+ high-rated local businesses in Delhi, Gurugram, Noida, Ghaziabad & Faridabad missing websites</p>
                 </div>
             </div>
             <div class="actions-group">
-                <button id="btn-scan" class="btn" onclick="scanIndiaLeads(false)" title="Loads India leads instantly from local JSON cache file">
+                <button id="btn-scan" class="btn" onclick="scanDelhiNCRLeads(false)" title="Loads Delhi-NCR leads instantly from local JSON cache file">
                     <span>⚡</span> LOAD SAVED LEADS (FAST)
                 </button>
-                <button id="btn-fresh-scan" class="btn" style="background: linear-gradient(135deg, #ea580c, #c2410c); box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);" onclick="scanIndiaLeads(true)" title="Forces fresh live scan across Indian tech hubs and saves to local JSON cache file">
+                <button id="btn-fresh-scan" class="btn" style="background: linear-gradient(135deg, #be123c, #9f1239); box-shadow: 0 4px 15px rgba(190, 18, 60, 0.4);" onclick="scanDelhiNCRLeads(true)" title="Forces fresh live scan across Delhi-NCR and saves to local JSON cache file">
                     <span>🔄</span> FRESH RESCAN
                 </button>
-                <button id="btn-export-csv" class="btn btn-export" onclick="exportIndiaCSV()">
+                <button id="btn-export-csv" class="btn btn-export" onclick="exportDelhiNCRCSV()">
                     <span>📥</span> EXPORT CSV
                 </button>
-                <button id="btn-export-excel" class="btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);" onclick="exportIndiaExcel()">
+                <button id="btn-export-excel" class="btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);" onclick="exportDelhiNCRExcel()">
                     <span>📊</span> EXPORT EXCEL
                 </button>
                 <button class="btn" style="background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);" onclick="window.location.href='/api/logout'">
@@ -484,21 +474,21 @@
 
         <div id="status-banner" class="status-banner" style="display: none;">
             <div class="spinner"></div>
-            <span id="status-text">Scanning Indian tech hubs (Bengaluru, Mumbai, Delhi-NCR, Hyderabad, Pune, Chennai) for Salesforce & local website prospects...</span>
+            <span id="status-text">Scanning Delhi-NCR region (CP, Hauz Khas, Dwarka, Cyber City, Sector 18 Noida, Indirapuram, Faridabad)...</span>
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card" style="cursor: pointer;" onclick="filterByType('ALL')" title="Click to view all India opportunities">
-                <div class="stat-lbl">India Total Opportunities</div>
+            <div class="stat-card" style="cursor: pointer;" onclick="filterByCategory('ALL')" title="Click to view all Delhi-NCR opportunities">
+                <div class="stat-lbl">Delhi-NCR Total Leads</div>
                 <div class="stat-val" id="total-leads">--</div>
             </div>
-            <div class="stat-card" style="cursor: pointer;" onclick="filterByType('salesforce')" title="Click to filter table for Salesforce Enterprise Deals">
-                <div class="stat-lbl">Salesforce Enterprise Deals ⚡</div>
-                <div class="stat-val" style="color: #38bdf8;" id="sf-deals">--</div>
+            <div class="stat-card" style="cursor: pointer;" onclick="filterByCategory('Healthcare')" title="Click to filter table for Healthcare & Dental">
+                <div class="stat-lbl">Dental & Healthcare 🩺</div>
+                <div class="stat-val" style="color: #38bdf8;" id="health-deals">--</div>
             </div>
-            <div class="stat-card" style="cursor: pointer;" onclick="filterByType('google_maps')" title="Click to filter table for Local Website Deals">
-                <div class="stat-lbl">Local Website Deals (₹40k+) 🗺️</div>
-                <div class="stat-val" style="color: #10b981;" id="web-deals">--</div>
+            <div class="stat-card" style="cursor: pointer;" onclick="filterByCategory('Restaurants')" title="Click to filter table for Restaurants & Dining">
+                <div class="stat-lbl">Restaurants & Dining 🍲</div>
+                <div class="stat-val" style="color: #10b981;" id="food-deals">--</div>
             </div>
             <div class="stat-card" style="cursor: pointer;" onclick="filterByGrade('A+')" title="Click to filter table for Hot Opportunities">
                 <div class="stat-lbl">Hot Opportunities (A+) 🔥</div>
@@ -510,21 +500,26 @@
         <div class="filter-panel">
             <div class="filter-group">
                 <span class="filter-label">🔎 Search:</span>
-                <input type="text" id="filter-search" class="filter-input" placeholder="Company, city, role, keyword..." oninput="applyFilters()">
+                <input type="text" id="filter-search" class="filter-input" placeholder="Company, locality (CP, Noida, Gurugram)..." oninput="applyFilters()">
 
-                <span class="filter-label" style="margin-left: 0.5rem;">🏷️ Lead Type:</span>
-                <select id="filter-type" class="filter-select" onchange="applyFilters()">
-                    <option value="ALL">All Opportunity Types</option>
-                    <option value="salesforce">Salesforce Enterprise Deals</option>
-                    <option value="google_maps">Local Business Website Deals</option>
+                <span class="filter-label" style="margin-left: 0.5rem;">🏷️ Category:</span>
+                <select id="filter-category" class="filter-select" onchange="applyFilters()">
+                    <option value="ALL">All Categories</option>
+                    <option value="Healthcare">Healthcare & Dental</option>
+                    <option value="Legal">Legal & Corporate Advocates</option>
+                    <option value="Restaurants">Restaurants & Dining</option>
+                    <option value="Solar">Solar & Electrical</option>
+                    <option value="Auto">Auto Repair & Detailing</option>
+                    <option value="Real Estate">Real Estate & Consultancy</option>
+                    <option value="Fitness">Fitness & Wellness</option>
                 </select>
 
                 <span class="filter-label" style="margin-left: 0.5rem;">💰 Min Budget:</span>
                 <select id="filter-budget" class="filter-select" onchange="applyFilters()">
                     <option value="0">All Budgets (Starting > ₹40,000 / $500)</option>
                     <option value="40000">> ₹40,000 ($500+ Website Mockups)</option>
-                    <option value="250000">> ₹2.5 Lakh ($3,000+ Custom Integrations)</option>
-                    <option value="1000000">> ₹10 Lakh ($12,000+ Enterprise Systems)</option>
+                    <option value="80000">> ₹80,000 ($1,000+ Dynamic Web Apps)</option>
+                    <option value="120000">> ₹1.2 Lakh ($1,500+ Custom Portals)</option>
                 </select>
 
                 <span class="filter-label" style="margin-left: 0.5rem;">📄 Per Page:</span>
@@ -545,11 +540,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th class="sortable" onclick="sortTable('company_name')">Indian Organization & Hub <span class="sort-arrow" id="sort-icon-company_name">↕</span></th>
-                        <th class="sortable" onclick="sortTable('lead_type')">Opportunity Type <span class="sort-arrow" id="sort-icon-lead_type">↕</span></th>
-                        <th>Project Requirement & Signals</th>
-                        <th class="sortable" onclick="sortTable('budget')">Budget (INR / USD) & Timeline <span class="sort-arrow" id="sort-icon-budget">↕</span></th>
-                        <th>Contact Lead</th>
+                        <th class="sortable" onclick="sortTable('company_name')">Delhi-NCR Organization & Locality <span class="sort-arrow" id="sort-icon-company_name">↕</span></th>
+                        <th class="sortable" onclick="sortTable('category')">Category & Rating <span class="sort-arrow" id="sort-icon-category">↕</span></th>
+                        <th>Website Requirement Signal</th>
+                        <th class="sortable" onclick="sortTable('budget')">Budget & Timeline <span class="sort-arrow" id="sort-icon-budget">↕</span></th>
+                        <th>Owner Contact</th>
                         <th class="sortable" onclick="sortTable('confidence_score')">Confidence & Score <span class="sort-arrow" id="sort-icon-confidence_score">↕</span></th>
                         <th>Action Pitch</th>
                     </tr>
@@ -557,19 +552,18 @@
                 <tbody id="leads-body">
                     <tr>
                         <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-                            Click <strong>"LOAD SAVED LEADS (FAST)"</strong> or <strong>"FRESH RESCAN"</strong> to explore 200+ Indian opportunities.
+                            Click <strong>LOAD SAVED LEADS</strong> or <strong>FRESH RESCAN</strong> to discover Delhi-NCR website prospects.
                         </td>
                     </tr>
                 </tbody>
             </table>
 
-            <!-- Pagination Bar -->
             <div class="pagination-bar">
-                <div class="pagination-info" id="pagination-info">Showing 0 - 0 of 0 leads</div>
+                <div class="pagination-info" id="pagination-info">Showing 0 of 0 leads</div>
                 <div class="pagination-controls">
                     <button class="btn-page" id="btn-first" onclick="goToPage(1)" disabled>⏮ First</button>
                     <button class="btn-page" id="btn-prev" onclick="goToPage(currentPage - 1)" disabled>◀ Prev</button>
-                    <span id="page-num-display" style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin: 0 0.5rem;">Page 1 of 1</span>
+                    <span id="page-num-display" style="margin: 0 0.5rem; font-weight: 600; font-size: 0.85rem; color: var(--accent-delhi);">Page 1 of 1</span>
                     <button class="btn-page" id="btn-next" onclick="goToPage(currentPage + 1)" disabled>Next ▶</button>
                     <button class="btn-page" id="btn-last" onclick="goToPage(totalPages)" disabled>Last ⏭</button>
                 </div>
@@ -581,11 +575,11 @@
     <div id="pitch-modal" class="modal-overlay" onclick="closeModal(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3 id="modal-title">✉️ Cold Pitch Proposal (India)</h3>
+                <h3 id="modal-title">✉️ Cold Pitch Proposal</h3>
                 <button class="modal-close" onclick="closeModalDirect()">✕</button>
             </div>
-            <div class="pitch-subject" id="modal-subject">Subject: ...</div>
-            <div class="pitch-body" id="modal-body">Loading email template...</div>
+            <div id="modal-subject" class="pitch-subject">Subject: </div>
+            <div id="modal-body" class="pitch-body"></div>
         </div>
     </div>
 
@@ -595,10 +589,12 @@
         let currentPage = 1;
         let pageSize = 25;
         let totalPages = 1;
-        let currentSortColumn = 'confidence_score';
-        let currentSortAsc = false;
 
-        async function scanIndiaLeads(force = false) {
+        let currentSortColumn = 'score';
+        let currentSortAsc = false;
+        let currentGradeFilter = 'ALL';
+
+        async function scanDelhiNCRLeads(force = false) {
             const scanBtn = document.getElementById('btn-scan');
             const freshBtn = document.getElementById('btn-fresh-scan');
             const banner = document.getElementById('status-banner');
@@ -608,16 +604,16 @@
             if (freshBtn) freshBtn.disabled = true;
 
             if (force) {
-                statusText.innerText = 'Executing fresh live scan across Indian tech hubs...';
+                statusText.innerText = 'Executing fresh live scan across Delhi, Gurugram, Noida, Ghaziabad & Faridabad...';
                 if (freshBtn) freshBtn.innerHTML = '<div class="spinner"></div> Running Live Scan...';
             } else {
-                statusText.innerText = 'Loading cached India leads instantly from local JSON file...';
+                statusText.innerText = 'Loading cached Delhi-NCR leads instantly from local JSON file...';
                 scanBtn.innerHTML = '<div class="spinner"></div> Loading...';
             }
             banner.style.display = 'flex';
 
             try {
-                const url = force ? '/api/scan/india?force=true' : '/api/scan/india';
+                const url = force ? '/api/scan/delhi-ncr?force=true' : '/api/scan/delhi-ncr';
                 const response = await fetch(url, { method: 'POST' });
                 rawLeads = await response.json();
                 applyFilters();
@@ -632,9 +628,9 @@
             }
         }
 
-        // Auto-load saved India leads on initial page load
+        // Auto-load saved Delhi-NCR leads on page load
         document.addEventListener('DOMContentLoaded', () => {
-            scanIndiaLeads(false);
+            scanDelhiNCRLeads(false);
         });
 
         function extractBudgetMin(budgetStr) {
@@ -646,10 +642,8 @@
             return 0;
         }
 
-        let currentGradeFilter = 'ALL';
-
-        function filterByType(typeVal) {
-            document.getElementById('filter-type').value = typeVal;
+        function filterByCategory(catVal) {
+            document.getElementById('filter-category').value = catVal;
             currentGradeFilter = 'ALL';
             applyFilters();
         }
@@ -663,18 +657,17 @@
             if (!rawLeads || rawLeads.length === 0) return;
 
             const searchTerm = document.getElementById('filter-search').value.toLowerCase().trim();
-            const typeFilter = document.getElementById('filter-type').value;
+            const catFilter = document.getElementById('filter-category').value;
             const minBudget = parseInt(document.getElementById('filter-budget').value, 10) || 0;
 
             filteredLeads = rawLeads.filter(lead => {
                 if (searchTerm) {
-                    const textToSearch = `${lead.company_name} ${lead.location} ${lead.project_description || ''} ${lead.contact_details || ''}`.toLowerCase();
+                    const textToSearch = `${lead.company_name} ${lead.location} ${lead.category || ''} ${lead.project_description || ''} ${lead.contact_details || ''}`.toLowerCase();
                     if (!textToSearch.includes(searchTerm)) return false;
                 }
 
-                if (typeFilter !== 'ALL') {
-                    if (typeFilter === 'salesforce' && !strContains(lead.lead_type, 'salesforce')) return false;
-                    if (typeFilter === 'google_maps' && !strContains(lead.lead_type, 'google_maps')) return false;
+                if (catFilter !== 'ALL') {
+                    if (!strContains(lead.category, catFilter)) return false;
                 }
 
                 if (currentGradeFilter !== 'ALL') {
@@ -711,7 +704,7 @@
         }
 
         function updateSortIcons() {
-            const columns = ['company_name', 'lead_type', 'budget', 'confidence_score'];
+            const columns = ['company_name', 'category', 'budget', 'confidence_score'];
             columns.forEach(col => {
                 const icon = document.getElementById(`sort-icon-${col}`);
                 if (icon) {
@@ -760,7 +753,7 @@
 
         function resetFilters() {
             document.getElementById('filter-search').value = '';
-            document.getElementById('filter-type').value = 'ALL';
+            document.getElementById('filter-category').value = 'ALL';
             document.getElementById('filter-budget').value = '0';
             currentGradeFilter = 'ALL';
             applyFilters();
@@ -768,12 +761,12 @@
 
         function updateStats() {
             document.getElementById('total-leads').innerText = rawLeads.length;
-            const sfCount = rawLeads.filter(l => strContains(l.lead_type, 'salesforce')).length;
-            const webCount = rawLeads.filter(l => strContains(l.lead_type, 'google_maps')).length;
+            const healthCount = rawLeads.filter(l => strContains(l.category, 'Healthcare')).length;
+            const foodCount = rawLeads.filter(l => strContains(l.category, 'Restaurants')).length;
             const hotCount = rawLeads.filter(l => l.grade && l.grade.startsWith('A+')).length;
 
-            document.getElementById('sf-deals').innerText = sfCount;
-            document.getElementById('web-deals').innerText = webCount;
+            document.getElementById('health-deals').innerText = healthCount;
+            document.getElementById('food-deals').innerText = foodCount;
             document.getElementById('hot-opportunities').innerText = hotCount;
         }
 
@@ -790,43 +783,38 @@
             const pageLeads = filteredLeads.slice(startIndex, endIndex);
 
             if (filteredLeads.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">No India leads match your current filter settings. Click <strong>Reset Filters</strong>.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">No Delhi-NCR leads match your current filter settings. Click <strong>Reset Filters</strong>.</td></tr>`;
                 updatePaginationControls(0, 0, 0);
                 return;
             }
 
             pageLeads.forEach(lead => {
                 const tr = document.createElement('tr');
-                const isSf = strContains(lead.lead_type, 'salesforce');
-
-                const domainHtml = lead.domain ? `<br><a href="https://${escapeHtml(lead.domain)}" target="_blank" rel="noopener noreferrer" style="font-size: 0.78rem; color: var(--accent-india); text-decoration: none;">🌐 ${escapeHtml(lead.domain)} ↗</a>` : '';
                 const mapsHtml = lead.maps_url ? `<br><a href="${escapeHtml(lead.maps_url)}" target="_blank" rel="noopener noreferrer" style="font-size: 0.78rem; color: #38bdf8; text-decoration: none;">📍 Google Maps Location ↗</a>` : '';
 
                 tr.innerHTML = `
                     <td>
                         <strong style="color: var(--text-main); font-size: 0.95rem;">${escapeHtml(lead.company_name)}</strong><br>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">📍 ${escapeHtml(lead.location || 'India')}</span>
-                        ${domainHtml}
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">📍 ${escapeHtml(lead.location || 'Delhi-NCR')}</span>
                         ${mapsHtml}
                     </td>
                     <td>
-                        <a href="${isSf ? '/index.html' : '/website_leads.html'}" class="${isSf ? 'badge-type' : 'badge-india'}" style="text-decoration: none; display: inline-block;" title="Go to ${isSf ? 'Salesforce Enterprise Dashboard' : 'Local Business Web Dashboard'}">
-                            ${isSf ? '⚡ SF Enterprise ↗' : '🗺️ Local Web Lead ↗'}
-                        </a>
+                        <span class="badge-delhi">🏛️ ${escapeHtml(lead.category || 'Local Business')}</span><br>
+                        <span style="font-size: 0.8rem; color: #f59e0b; margin-top: 0.2rem; display: inline-block;">⭐ ${lead.rating || 4.8} (${lead.review_count || 50} reviews)</span>
                     </td>
                     <td>
                         <div style="max-width: 380px; font-size: 0.88rem; color: #cbd5e1; line-height: 1.45;">
-                            ${escapeHtml(lead.project_description || 'India opportunity requiring CRM / Web development.')}
+                            ${escapeHtml(lead.project_description || 'Delhi-NCR local business missing website.')}
                         </div>
                     </td>
                     <td>
                         <strong style="color: #34d399; font-size: 0.9rem;">${escapeHtml(lead.budget || lead.estimated_budget || '₹40,000+')}</strong><br>
-                        <span style="font-size: 0.78rem; color: var(--text-muted);">⏱️ ${escapeHtml(lead.timeline || '1-3 Weeks')}</span>
+                        <span style="font-size: 0.78rem; color: var(--text-muted);">⏱️ ${escapeHtml(lead.timeline || '1-2 Weeks')}</span>
                     </td>
                     <td>
                         <div style="font-size: 0.85rem; color: var(--text-muted);">
-                            <strong>${escapeHtml(lead.contact_title || 'Lead Contact')}</strong><br>
-                            <span style="color: var(--accent-india);">${escapeHtml(lead.contact_details || lead.phone || 'Contact Available')}</span>
+                            <strong>${escapeHtml(lead.contact_title || 'Proprietor')}</strong><br>
+                            <span style="color: var(--accent-delhi);">${escapeHtml(lead.contact_details || lead.phone || 'Contact Available')}</span>
                         </div>
                     </td>
                     <td>
@@ -846,7 +834,7 @@
         }
 
         function updatePaginationControls(start, end, total) {
-            document.getElementById('pagination-info').innerText = `Showing ${start} - ${end} of ${total} India leads`;
+            document.getElementById('pagination-info').innerText = `Showing ${start} - ${end} of ${total} Delhi-NCR leads`;
             document.getElementById('page-num-display').innerText = `Page ${currentPage} of ${totalPages}`;
 
             document.getElementById('btn-first').disabled = (currentPage === 1);
@@ -878,12 +866,12 @@
             document.getElementById('pitch-modal').style.display = 'none';
         }
 
-        function exportIndiaCSV() {
-            window.location.href = '/api/export/india-csv';
+        function exportDelhiNCRCSV() {
+            window.location.href = '/api/export/delhi-ncr-csv';
         }
 
-        function exportIndiaExcel() {
-            window.location.href = '/api/export/india-excel';
+        function exportDelhiNCRExcel() {
+            window.location.href = '/api/export/delhi-ncr-excel';
         }
 
         function escapeHtml(str) {

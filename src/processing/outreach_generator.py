@@ -18,7 +18,21 @@ class OutreachGenerator:
         intent = lead.get("intent_signal")
         techs = ", ".join(lead.get("tech_footprint", [])) or "Salesforce ecosystem"
 
-        if lead.get("lead_type") == "google_maps_no_website" or "Missing Website" in str(lead.get("website_status", "")):
+        if lead.get("lead_type") == "devops_project" or "devops" in str(lead.get("category", "")).lower() or "devops" in str(lead.get("project_description", "")).lower():
+            tech_stack = ", ".join(lead.get("tech_footprint", [])) or "Cloud & DevOps Infrastructure"
+            proj_desc = lead.get("project_description", "DevOps Infrastructure Engineering")
+            subject = f"DevOps Automation & Infrastructure Engineering for {company}"
+            body = (
+                f"Hi {lead.get('contact_title', 'DevOps Leader')},\n\n"
+                f"I noticed {company} has an active infrastructure requirement for '{proj_desc}' utilizing {tech_stack}.\n\n"
+                f"Our team of certified DevOps & Senior SRE Engineers specializes in building automated CI/CD pipelines, "
+                f"Kubernetes cluster provisioning, Terraform IaC infrastructure, and 24/7 observability setups with Prometheus & Grafana.\n\n"
+                f"We can help accelerate your deployment timeline while reducing cloud compute spend by 20-35% through containerization and FinOps optimization.\n\n"
+                f"Would you be open to a 15-minute intro call this week to discuss technical architecture options for {company}?\n\n"
+                f"Best regards,\n{consultant_name}"
+            )
+        elif lead.get("lead_type") == "google_maps_no_website" or "Missing Website" in str(lead.get("website_status", "")):
+
             rating = lead.get("rating", 4.8)
             reviews = lead.get("review_count", 40)
             category = lead.get("category", "local business")

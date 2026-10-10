@@ -1,3 +1,4 @@
+import re
 from typing import List, Dict, Any
 from ..utils.logger import get_logger
 
@@ -30,12 +31,41 @@ class LeadScorer:
         logger.info(f"Merging lead sources, calculating confidence scores, and filtering for confidence > {threshold}%...")
         
         lead_map: Dict[str, Dict[str, Any]] = {}
+        seen_phones: Dict[str, str] = {}  # phone -> key map for strict contact phone deduplication
+
+        def compute_key(lead: Dict[str, Any]) -> str:
+            phone = lead.get("phone", "")
+            if phone:
+                digits = re.sub(r'\D', '', str(phone))
+                if len(digits) >= 8:
+                    phone_key = f"phone_{digits[-10:]}"
+                    if phone_key in seen_phones:
+                        return seen_phones[phone_key]
+            
+            domain = lead.get("domain", "").strip().lower()
+            if domain:
+                clean_domain = re.sub(r'\d+', '', domain)
+                key = f"domain_{clean_domain}"
+                if phone:
+                    digits = re.sub(r'\D', '', str(phone))
+                    if len(digits) >= 8:
+                        seen_phones[f"phone_{digits[-10:]}"] = key
+                return key
+
+            company = lead.get("company_name", "").strip().lower()
+            clean_company = re.sub(r'#\d+|\(\d+\)', '', company).strip()
+            key = f"company_{clean_company}"
+            if phone:
+                digits = re.sub(r'\D', '', str(phone))
+                if len(digits) >= 8:
+                    seen_phones[f"phone_{digits[-10:]}"] = key
+            return key
 
         # 1. Process Job Signals
         for lead in job_leads:
             company = lead["company_name"]
             domain = lead.get("domain", "")
-            key = domain or company.lower()
+            key = compute_key(lead)
 
             lead_map[key] = {
                 "company_name": company,
@@ -58,7 +88,7 @@ class LeadScorer:
         for lead in intent_leads:
             company = lead["company_name"]
             domain = lead.get("domain", "")
-            key = domain or company.lower()
+            key = compute_key(lead)
             intent_text = lead.get("intent_signal") or lead.get("project_description", "Salesforce Consulting Project")
 
             if key not in lead_map:

@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salesforce Lead Generation & Project Scanner</title>
-    <meta name="description" content="Scan Salesforce project buying signals, calculate confidence scores & export 200+ enriched Salesforce project opportunities.">
+    <title>DevOps & Cloud Infrastructure Lead Scanner</title>
+    <meta name="description" content="Scan 200+ DevOps, Kubernetes, Terraform IaC, SRE & CI/CD pipeline project opportunities with confidence scoring & cold pitch templates.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #090d16;
             --panel-bg: #131c2e;
             --panel-hover: #1a263e;
-            --accent-sf: #00a1e0;
-            --accent-sf-gradient: linear-gradient(135deg, #00a1e0, #0052cc);
+            --accent-devops: #06b6d4;
+            --accent-devops-gradient: linear-gradient(135deg, #06b6d4, #2563eb);
             --accent-green: #10b981;
             --accent-amber: #f59e0b;
             --accent-purple: #8b5cf6;
@@ -31,7 +31,7 @@
         }
 
         .container {
-            max-width: 1450px;
+            max-width: 1550px;
             margin: 0 auto;
         }
 
@@ -41,6 +41,7 @@
             margin-bottom: 1.5rem;
             border-bottom: 1px solid var(--card-border);
             padding-bottom: 0.75rem;
+            flex-wrap: wrap;
         }
 
         .nav-tab {
@@ -64,9 +65,9 @@
 
         .nav-tab.active {
             color: white;
-            background: var(--accent-sf-gradient);
-            border-color: rgba(0, 161, 224, 0.4);
-            box-shadow: 0 4px 15px rgba(0, 161, 224, 0.3);
+            background: var(--accent-devops-gradient);
+            border-color: rgba(6, 182, 212, 0.4);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
         }
 
         .header {
@@ -87,54 +88,44 @@
         }
 
         .logo-badge {
-            background: var(--accent-sf-gradient);
+            background: var(--accent-devops-gradient);
             padding: 0.75rem 1.25rem;
             border-radius: 12px;
             font-weight: 800;
             font-size: 1.4rem;
             color: white;
-            box-shadow: 0 4px 20px rgba(0, 161, 224, 0.4);
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
             letter-spacing: -0.02em;
         }
 
         h1 { font-size: 1.85rem; font-weight: 800; letter-spacing: -0.02em; }
-        p.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem; }
+        .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem; }
 
         .actions-group {
             display: flex;
-            align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
 
         .btn {
-            background: var(--accent-sf-gradient);
+            background: var(--accent-devops-gradient);
             color: white;
             border: none;
-            padding: 0.85rem 1.6rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 8px;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.25s ease;
-            text-decoration: none;
-            display: inline-flex;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+            display: flex;
             align-items: center;
-            gap: 0.6rem;
-            box-shadow: 0 4px 15px rgba(0, 161, 224, 0.3);
+            gap: 0.5rem;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 161, 224, 0.5);
-        }
-
-        .btn-export {
-            background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-export:hover {
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
         }
 
         .btn:disabled {
@@ -142,6 +133,35 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        .btn-export {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .status-banner {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid var(--accent-devops);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #38bdf8;
+            font-weight: 500;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(6, 182, 212, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-devops);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .stats-grid {
             display: grid;
@@ -153,39 +173,73 @@
         .stat-card {
             background: var(--panel-bg);
             border: 1px solid var(--card-border);
+            padding: 1.25rem;
             border-radius: 12px;
-            padding: 1.4rem;
-            transition: transform 0.2s ease;
         }
 
-        .stat-card:hover { transform: translateY(-3px); }
+        .stat-lbl { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .stat-val { font-size: 2rem; font-weight: 800; margin-top: 0.5rem; color: var(--text-main); }
 
-        .stat-val { font-size: 2.2rem; font-weight: 800; color: var(--accent-sf); margin-top: 0.5rem; }
-        .stat-lbl { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
-
-        .status-banner {
-            background: rgba(0, 161, 224, 0.1);
-            border: 1px solid var(--accent-sf);
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
+        .filter-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
             gap: 0.75rem;
-            font-weight: 500;
+            flex-wrap: wrap;
         }
 
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .filter-input, .filter-select {
+            background: #0d1524;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.55rem 0.9rem;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            border-color: var(--accent-devops);
+        }
+
+        .filter-input { width: 240px; }
+
+        .btn-clear {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-clear:hover {
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
 
         .leads-table-container {
             background: var(--panel-bg);
@@ -195,58 +249,78 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--card-border); }
-        th { 
-            background: #0c1424; 
-            color: var(--text-muted); 
-            font-weight: 700; 
-            font-size: 0.8rem; 
-            text-transform: uppercase; 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #0d1524;
+            padding: 1rem 1.25rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
             letter-spacing: 0.05em;
-            user-select: none;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--card-border);
         }
 
         th.sortable {
             cursor: pointer;
-            transition: color 0.2s, background-color 0.2s;
+            user-select: none;
         }
 
         th.sortable:hover {
             color: var(--text-main);
-            background: #152238;
         }
 
         .sort-arrow {
-            display: inline-block;
-            margin-left: 0.3rem;
             font-size: 0.75rem;
-            color: var(--accent-sf);
+            margin-left: 0.3rem;
         }
 
-        tr:hover { background: var(--panel-hover); }
+        td {
+            padding: 1.1rem 1.25rem;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: var(--panel-hover);
+        }
 
         .badge-conf {
             background: rgba(16, 185, 129, 0.15);
             color: #34d399;
-            border: 1px solid #10b981;
+            border: 1px solid var(--accent-green);
             padding: 0.35rem 0.75rem;
             border-radius: 20px;
             font-weight: 700;
             font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
+            display: inline-block;
         }
 
         .badge-score {
-            background: rgba(0, 161, 224, 0.15);
+            background: rgba(6, 182, 212, 0.15);
             color: #38bdf8;
-            border: 1px solid var(--accent-sf);
+            border: 1px solid var(--accent-devops);
             padding: 0.35rem 0.75rem;
             border-radius: 20px;
             font-weight: 700;
             font-size: 0.85rem;
+        }
+
+        .tech-pill {
+            background: #1e293b;
+            color: #38bdf8;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 0.15rem 0.15rem 0.15rem 0;
+            border: 1px solid #0284c7;
         }
 
         .project-desc {
@@ -271,64 +345,6 @@
             font-size: 0.88rem;
             color: #cbd5e1;
             font-weight: 500;
-        }
-
-        .filter-panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .filter-input, .filter-select {
-            background: #090d16;
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            padding: 0.6rem 0.9rem;
-            border-radius: 6px;
-            font-size: 0.88rem;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .filter-input:focus, .filter-select:focus {
-            border-color: var(--accent-sf);
-        }
-
-        .btn-clear {
-            background: transparent;
-            border: 1px solid var(--card-border);
-            color: var(--text-muted);
-            padding: 0.55rem 1rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-clear:hover {
-            color: var(--text-main);
-            border-color: var(--text-muted);
         }
 
         /* Pagination Styles */
@@ -371,9 +387,9 @@
         }
 
         .btn-page:hover:not(:disabled) {
-            background: var(--accent-sf-gradient);
+            background: var(--accent-devops-gradient);
             border-color: transparent;
-            box-shadow: 0 4px 12px rgba(0, 161, 224, 0.3);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
         }
 
         .btn-page:disabled {
@@ -446,7 +462,7 @@
     <div class="container">
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <a href="/index.html" class="nav-tab active">
+            <a href="/index.html" class="nav-tab">
                 <span>⚡</span> Salesforce Enterprise Leads (200+)
             </a>
             <a href="/website_leads.html" class="nav-tab">
@@ -458,24 +474,24 @@
             <a href="/delhi_ncr_leads.html" class="nav-tab">
                 <span>🏛️</span> Delhi-NCR Leads (200+)
             </a>
-            <a href="/devops_leads.html" class="nav-tab">
+            <a href="/devops_leads.html" class="nav-tab active">
                 <span>🚀</span> DevOps Projects (200+)
             </a>
         </div>
 
         <div class="header">
             <div class="logo-title">
-                <div class="logo-badge">⚡ SF Lead Scanner</div>
+                <div class="logo-badge">🚀 DevOps Lead Engine</div>
                 <div>
-                    <h1>Salesforce Project Lead Intelligence</h1>
-                    <p class="subtitle">Scan 200+ Salesforce buying signals, calculate confidence scores & export enriched project leads</p>
+                    <h1>DevOps & Cloud Infrastructure Projects</h1>
+                    <p class="subtitle">Scan 200+ Kubernetes, Terraform, CI/CD, SRE & DevSecOps opportunities with confidence verification</p>
                 </div>
             </div>
             <div class="actions-group">
-                <button id="btn-scan" class="btn" onclick="scanProjects(false)" title="Loads leads instantly from local JSON cache file">
-                    <span>⚡</span> LOAD SAVED LEADS (FAST)
+                <button id="btn-scan" class="btn" onclick="scanDevOpsProjects(false)" title="Click to scan/load DevOps project opportunities">
+                    <span>🚀</span> SCAN DEVOPS PROJECTS (200+)
                 </button>
-                <button id="btn-fresh-scan" class="btn" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);" onclick="scanProjects(true)" title="Forces fresh live scan across all APIs and saves to local JSON cache file">
+                <button id="btn-fresh-scan" class="btn" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);" onclick="scanDevOpsProjects(true)" title="Forces fresh live scan across DevOps signals and saves to local JSON cache file">
                     <span>🔄</span> FRESH RESCAN
                 </button>
                 <button id="btn-export-csv" class="btn btn-export" onclick="exportCSV()">
@@ -492,7 +508,7 @@
 
         <div id="status-banner" class="status-banner" style="display: none;">
             <div class="spinner"></div>
-            <span id="status-text">Scanning hiring signals, RFPs, tech stacks and running free-tier enrichment APIs across 200+ Salesforce opportunities...</span>
+            <span id="status-text">Scanning Kubernetes, Terraform IaC, SRE & CI/CD pipeline signals across 200+ DevOps project opportunities...</span>
         </div>
 
         <div class="stats-grid">
@@ -505,7 +521,7 @@
                 <div class="stat-val" style="color: #10b981;" id="verified-leads">--</div>
             </div>
             <div class="stat-card">
-                <div class="stat-lbl">Deals > $500 & Up</div>
+                <div class="stat-lbl">High-Value Deals (>$25k)</div>
                 <div class="stat-val" style="color: #f59e0b;" id="starter-deals">--</div>
             </div>
             <div class="stat-card">
@@ -518,7 +534,7 @@
         <div class="filter-panel">
             <div class="filter-group">
                 <span class="filter-label">🔎 Search:</span>
-                <input type="text" id="filter-search" class="filter-input" placeholder="Company, domain, role, keyword..." oninput="applyFilters()">
+                <input type="text" id="filter-search" class="filter-input" placeholder="Company, domain, tech, description..." oninput="applyFilters()">
 
                 <span class="filter-label" style="margin-left: 0.5rem;">🛡️ Min Confidence:</span>
                 <select id="filter-confidence" class="filter-select" onchange="applyFilters()">
@@ -530,10 +546,10 @@
 
                 <span class="filter-label" style="margin-left: 0.5rem;">💰 Min Budget:</span>
                 <select id="filter-budget" class="filter-select" onchange="applyFilters()">
-                    <option value="0">All Budgets (Starting >$500)</option>
-                    <option value="500">> $500 (Quick Tweaks)</option>
-                    <option value="2500">> $2,500 (Custom Builds)</option>
-                    <option value="10000">> $10,000 (Enterprise Deals)</option>
+                    <option value="0">All Budgets</option>
+                    <option value="15000">> $15,000</option>
+                    <option value="30000">> $30,000</option>
+                    <option value="50000">> $50,000 (Enterprise Deals)</option>
                 </select>
 
                 <span class="filter-label" style="margin-left: 0.5rem;">⭐ Grade:</span>
@@ -563,10 +579,10 @@
                 <thead>
                     <tr>
                         <th class="sortable" onclick="sortTable('company_name')">Company & Domain <span class="sort-arrow" id="sort-icon-company_name">↕</span></th>
-                        <th class="sortable" onclick="sortTable('project_description')">Project Description <span class="sort-arrow" id="sort-icon-project_description">↕</span></th>
+                        <th class="sortable" onclick="sortTable('project_description')">Project Description & Tech Stack <span class="sort-arrow" id="sort-icon-project_description">↕</span></th>
                         <th class="sortable" onclick="sortTable('timeline')">Timeline <span class="sort-arrow" id="sort-icon-timeline">↕</span></th>
                         <th class="sortable" onclick="sortTable('budget')">Budget <span class="sort-arrow" id="sort-icon-budget">↕</span></th>
-                        <th>Contact Details</th>
+                        <th>Contact & Location</th>
                         <th class="sortable" onclick="sortTable('confidence_score')">Confidence Score <span class="sort-arrow" id="sort-icon-confidence_score">↕</span></th>
                         <th class="sortable" onclick="sortTable('score')">Lead Score <span class="sort-arrow" id="sort-icon-score">↕</span></th>
                         <th>Action Pitch</th>
@@ -575,7 +591,7 @@
                 <tbody id="leads-body">
                     <tr>
                         <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-                            Click <strong>"SCAN FOR PROJECTS (200+)"</strong> to execute live signal collection & enrichment.
+                            Click <strong>"SCAN DEVOPS PROJECTS (200+)"</strong> to execute live DevOps signal collection & enrichment.
                         </td>
                     </tr>
                 </tbody>
@@ -616,7 +632,7 @@
         let currentSortColumn = 'confidence_score';
         let currentSortAsc = false;
 
-        async function scanProjects(force = false) {
+        async function scanDevOpsProjects(force = false) {
             const scanBtn = document.getElementById('btn-scan');
             const freshBtn = document.getElementById('btn-fresh-scan');
             const banner = document.getElementById('status-banner');
@@ -626,34 +642,29 @@
             if (freshBtn) freshBtn.disabled = true;
 
             if (force) {
-                statusText.innerText = 'Executing fresh live scan across all APIs & collectors...';
+                statusText.innerText = 'Executing fresh live scan across DevOps signals & collectors...';
                 if (freshBtn) freshBtn.innerHTML = '<div class="spinner"></div> Running Live Scan...';
             } else {
-                statusText.innerText = 'Loading cached leads instantly from local JSON file...';
-                scanBtn.innerHTML = '<div class="spinner"></div> Loading...';
+                statusText.innerText = 'Loading cached DevOps leads instantly from local JSON file...';
+                scanBtn.innerHTML = '<div class="spinner"></div> Scanning...';
             }
             banner.style.display = 'flex';
 
             try {
-                const url = force ? '/api/scan?force=true' : '/api/scan';
+                const url = force ? '/api/scan/devops?force=true' : '/api/scan/devops';
                 const response = await fetch(url, { method: 'POST' });
                 rawLeads = await response.json();
                 applyFilters();
             } catch (err) {
-                alert('Scanning failed: ' + err.message);
+                alert('DevOps Scanning failed: ' + err.message);
             } finally {
                 scanBtn.disabled = false;
                 if (freshBtn) freshBtn.disabled = false;
-                scanBtn.innerHTML = '<span>⚡</span> LOAD SAVED LEADS (FAST)';
+                scanBtn.innerHTML = '<span>🚀</span> SCAN DEVOPS PROJECTS (200+)';
                 if (freshBtn) freshBtn.innerHTML = '<span>🔄</span> FRESH RESCAN';
                 banner.style.display = 'none';
             }
         }
-
-        // Auto-load saved leads on initial page load
-        document.addEventListener('DOMContentLoaded', () => {
-            scanProjects(false);
-        });
 
         function extractBudgetMin(budgetStr) {
             if (!budgetStr) return 0;
@@ -672,7 +683,8 @@
 
             filteredLeads = rawLeads.filter(lead => {
                 if (searchTerm) {
-                    const textToSearch = `${lead.company_name} ${lead.domain} ${lead.project_description || ''} ${lead.intent_signal || ''} ${lead.hiring_signal || ''} ${lead.contact_details || ''}`.toLowerCase();
+                    const techStr = (lead.tech_footprint || []).join(' ');
+                    const textToSearch = `${lead.company_name} ${lead.domain} ${lead.project_description || ''} ${lead.category || ''} ${techStr} ${lead.contact_details || ''} ${lead.location || ''}`.toLowerCase();
                     if (!textToSearch.includes(searchTerm)) return false;
                 }
 
@@ -743,7 +755,7 @@
         function renderCurrentPage() {
             document.getElementById('total-leads').innerText = filteredLeads.length;
             document.getElementById('verified-leads').innerText = filteredLeads.filter(l => l.confidence_score > 60).length;
-            document.getElementById('starter-deals').innerText = filteredLeads.filter(l => extractBudgetMin(l.budget || l.estimated_budget) >= 500).length;
+            document.getElementById('starter-deals').innerText = filteredLeads.filter(l => extractBudgetMin(l.budget || l.estimated_budget) >= 25000).length;
             document.getElementById('hot-opportunities').innerText = filteredLeads.filter(l => l.score >= 85).length;
 
             totalPages = Math.ceil(filteredLeads.length / pageSize) || 1;
@@ -765,28 +777,32 @@
 
             const tbody = document.getElementById('leads-body');
             if (!pageData || pageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">No leads match current filter criteria.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">No leads match current filter criteria. Click "SCAN DEVOPS PROJECTS (200+)" to initiate scan.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = pageData.map((lead, idx) => `
+            tbody.innerHTML = pageData.map((lead, idx) => {
+                const techs = (lead.tech_footprint || []).map(t => `<span class="tech-pill">${t}</span>`).join(' ');
+                return `
                 <tr>
                     <td>
                         <strong>${lead.company_name}</strong><br>
-                        <span style="color: var(--accent-sf); font-size: 0.85rem;">${lead.domain}</span>
+                        <span style="color: var(--accent-devops); font-size: 0.85rem;">${lead.domain}</span>
                     </td>
                     <td>
-                        <div class="project-desc">${lead.project_description || lead.intent_signal || lead.hiring_signal}</div>
+                        <div class="project-desc">${lead.project_description || lead.intent_signal}</div>
+                        <div style="margin-top: 0.35rem;">${techs}</div>
                     </td>
                     <td>
-                        <span class="meta-pill">⏱️ ${lead.timeline || 'Immediate'}</span>
+                        <span class="meta-pill">⏱️ ${lead.timeline || '1-2 Months'}</span>
                     </td>
                     <td>
-                        <span class="meta-pill" style="color: #34d399; border-color: #059669;">💰 ${lead.budget || '$100k+'}</span>
+                        <span class="meta-pill" style="color: #34d399; border-color: #059669;">💰 ${lead.budget || '$35,000+'}</span>
                     </td>
                     <td>
                         <div class="contact-info">
-                            👤 ${formatContactDetails(lead.contact_details || lead.contact_title)}
+                            👤 ${lead.contact_details || lead.contact_title || 'DevOps Leader'}<br>
+                            <span style="font-size:0.8rem; color:var(--text-muted);">📍 ${lead.location || 'Remote'}</span>
                         </div>
                     </td>
                     <td>
@@ -801,15 +817,9 @@
                         </button>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
 
             window.currentRenderedData = pageData;
-        }
-
-        function formatContactDetails(text) {
-            if (!text) return 'N/A';
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            return text.replace(urlRegex, url => `<a href="${url}" target="_blank" style="color:#38bdf8; text-decoration:underline;">LinkedIn Profile ↗</a>`);
         }
 
         function resetFilters() {
@@ -842,11 +852,11 @@
         }
 
         function exportCSV() {
-            window.location.href = '/api/export/csv';
+            window.location.href = '/api/export/devops-csv';
         }
 
         function exportExcel() {
-            window.location.href = '/api/export/excel';
+            window.location.href = '/api/export/devops-excel';
         }
     </script>
 </body>

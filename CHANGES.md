@@ -4,6 +4,79 @@ All notable changes, features, bug fixes, and updates to the **Salesforce & Loca
 
 ---
 
+## [2.0.0] - 2026-10-10
+
+### Added & Enhanced
+- **Dashboard Authentication & Security (`login.html`, `.env`, `.env.example`, `app.py`)**:
+  - Implemented secure authentication with credential storage in `.env` (`ADMIN_USERNAME` & `ADMIN_PASSWORD`).
+  - Added `.env` configuration file loader and created dedicated glassmorphic login interface [`login.html`](file:///Users/anoop/Project/Lead%20geneation/login.html).
+  - Protected all dashboard pages (`/index.html`, `/website_leads.html`, `/india_leads.html`, `/delhi_ncr_leads.html`, `/devops_leads.html`) and API endpoints (`/api/scan*`, `/api/export/*`) via HTTP session cookies. Unauthenticated requests are automatically redirected to `/login.html`.
+  - Added `🔒 LOGOUT` buttons in header action groups across all 5 dashboard HTML pages.
+- **Docker Containerization (`Dockerfile`)**:
+  - Created production-ready `Dockerfile` based on `python:3.10-slim` with automated dependency installation, output directory setup, environment variable handling (`PORT`), and container startup command.
+- **Render.com Deployment Configuration (`render.yaml`)**:
+  - Created `render.yaml` Infrastructure as Code specification for deploying the Docker container as a web service on Render.com with free plan defaults, environment variable bindings, and `/login.html` health check.
+- **Unit Test Coverage (`tests/test_lead_generation.py`)**:
+  - Added `test_auth_and_env_loading()` test suite verifying `.env` credential loading and token verification (16/16 tests passing).
+
+---
+
+## [1.9.0] - 2026-10-10
+
+### Added & Enhanced
+- **DevOps & Cloud Infrastructure Lead Generation Engine (`src/collectors/devops_collector.py`)**:
+  - Implemented `DevOpsLeadCollector` and `DevOpsCollectorStrategy` discovering **210+ distinct DevOps, Kubernetes, Terraform IaC, SRE, DevSecOps, and CI/CD pipeline project opportunities**.
+  - Registered strategy in `CollectorFactory` under keys `"devops"`, `"devops_leads"`, `"devops_projects"`, `"cloud_infrastructure"`, and `"sre"`.
+- **Dedicated DevOps Dashboard Page (`devops_leads.html`)**:
+  - Created standalone UI page (`devops_leads.html`) with rich aesthetics, cyan/blue theme, filter controls, pagination, instant cached loading (`output/devops_scanned_leads.json`), live rescan capabilities, and pitch preview modal.
+  - Implemented page scan trigger upon explicit user click on the scan button ("SCAN DEVOPS PROJECTS (200+)").
+  - Updated navigation bar across all 5 dashboard HTML pages (`index.html`, `website_leads.html`, `india_leads.html`, `delhi_ncr_leads.html`, `devops_leads.html`).
+- **DevOps Cold Pitch Generation (`src/processing/outreach_generator.py`)**:
+  - Added tailored cold pitch templates for DevOps leads covering Kubernetes migration, Terraform IaC automation, CI/CD security, SRE observability, and cloud cost optimization.
+- **Backend API & Export Routes (`app.py`)**:
+  - Added `/devops_leads.html`, `POST /api/scan/devops`, `GET /api/export/devops-csv`, and `GET /api/export/devops-excel`.
+- **Unit Test Coverage (`tests/test_lead_generation.py`)**:
+  - Added `test_devops_collector_and_strategy` unit test (15/15 tests passing).
+
+---
+
+## [1.8.0] - 2026-10-03
+
+### Added & Enhanced
+- **Delhi-NCR Lead Generation Engine & Strategy (`src/collectors/delhi_ncr_collector.py`)**:
+  - Implemented `DelhiNCRLeadCollector` and `DelhiNCRCollectorStrategy` discovering **230 distinct local business website opportunities** in the Delhi-NCR region (New Delhi, Old Delhi, Gurugram, Noida, Greater Noida, Ghaziabad, Faridabad).
+  - Registered strategy in `CollectorFactory` under keys `"delhi_ncr"`, `"delhi"`, `"ncr"`, and `"delhi_ncr_leads"`.
+- **Dedicated Delhi-NCR Dashboard UI (`delhi_ncr_leads.html`)**:
+  - Created standalone UI page (`delhi_ncr_leads.html`) featuring locality & category filters, fast JSON cache loading (`output/delhi_ncr_scanned_leads.json`), header column sorting arrows, pagination, and pitch preview modal.
+  - Updated navigation tabs across all 4 pages (`index.html`, `website_leads.html`, `india_leads.html`, `delhi_ncr_leads.html`) to link seamlessly between all dashboards.
+- **Backend API & Export Routes (`app.py`)**:
+  - Added `/delhi_ncr_leads.html`, `POST /api/scan/delhi-ncr`, `GET /api/export/delhi-ncr-csv`, and `GET /api/export/delhi-ncr-excel`.
+- **Node Server Daemon Restart (`server.js`)**:
+  - Restarted `npm start` Node server daemon to load fresh API routes and serve all 4 web dashboards.
+- **Unit Test Coverage (`tests/test_lead_generation.py`)**:
+  - Added `test_delhi_ncr_collector_and_strategy` unit test (14/14 tests passing).
+
+---
+
+## [1.7.0] - 2026-10-03
+
+### Fixed & Enhanced
+- **Deduplication & Phone Normalization (`src/processing/lead_scorer.py` & `src/collectors/india_collector.py`)**:
+  - Resolved `NameError: name 're' is not defined` by adding top-level `import re` to `src/processing/lead_scorer.py`.
+  - Removed artificial numbered suffix loops (`#1`..`#10`) in `india_collector.py` in favor of 100% distinct Indian enterprises and local business website leads with unique phone numbers and localities.
+  - Enhanced `LeadScorer` to deduplicate leads by normalized phone numbers (`phone_9845091001`) and clean base domain names while preserving verified signals and intent sources.
+- **NPM Server & Port Fallback (`package.json` & `server.js`)**:
+  - Created `package.json` with `npm start`, `npm run dev`, and `npm run serve` scripts.
+  - Implemented Node.js web server (`server.js`) serving static dashboard pages on `http://localhost:3000` and seamlessly proxying API routes (`/api/*`) to the Python backend on port 8000.
+  - Added automatic `EADDRINUSE` port retry fallback logic (auto-retries port 3001, 3002, etc. if port 3000 is occupied).
+- **Link & Nav Tab Interactivity (`india_leads.html`, `index.html`, `website_leads.html`)**:
+  - Fixed interactive links across all 3 dashboard pages (`/index.html`, `/website_leads.html`, `/india_leads.html`).
+  - Added direct working links (`⚡ SF Enterprise ↗`) from the India dashboard (`india_leads.html`) to the global Salesforce dashboard (`/index.html`).
+  - Made stat cards on `india_leads.html` interactive and clickable filters (`Salesforce Enterprise Deals ⚡`, `Local Website Deals 🗺️`, `Hot Opportunities 🔥`).
+  - Added `filterByType()` and `filterByGrade()` JS functions on `india_leads.html` to instantly filter table rows by opportunity type or grade.
+
+---
+
 ## [1.6.0] - 2026-10-03
 
 ### Added / Updated

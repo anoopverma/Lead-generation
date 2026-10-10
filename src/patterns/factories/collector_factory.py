@@ -10,7 +10,9 @@ from ..strategies.collector_strategies import (
     LinkdAPIDiscoverStrategy,
     FreelanceMarketplaceCollectorStrategy,
     GoogleMapsCollectorStrategy,
-    IndiaCollectorStrategy
+    IndiaCollectorStrategy,
+    DelhiNCRCollectorStrategy,
+    DevOpsCollectorStrategy
 )
 
 class CollectorFactory:
@@ -44,7 +46,12 @@ class CollectorFactory:
             return GoogleMapsCollectorStrategy(config=config)
         elif ctype in ["india", "india_leads", "india_projects"]:
             return IndiaCollectorStrategy(config=config)
+        elif ctype in ["delhi_ncr", "delhi", "ncr", "delhi_ncr_leads"]:
+            return DelhiNCRCollectorStrategy(config=config)
+        elif ctype in ["devops", "devops_leads", "devops_projects", "cloud_infrastructure", "sre"]:
+            return DevOpsCollectorStrategy(config=config)
         else:
             raise ValueError(f"Unknown collector strategy type: '{collector_type}'")
+
 
 

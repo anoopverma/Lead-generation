@@ -1,0 +1,16 @@
+# Render.com Infrastructure as Code Deployment Configuration
+services:
+  - type: web
+    name: lead-generation-engine
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /login.html
+    envVars:
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: PORT
+        value: 8000
