@@ -691,10 +691,16 @@ class SalesforceLeadAppHandler(http.server.SimpleHTTPRequestHandler):
 
 
 
+class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    allow_reuse_address = True
+    daemon_threads = True
+
+
 def run_server():
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", PORT), SalesforceLeadAppHandler) as httpd:
-        logger.info(f"🌐 Lead Generation Dashboard active at: http://localhost:{PORT}")
+    server_address = ("0.0.0.0", PORT)
+    with ThreadedTCPServer(server_address, SalesforceLeadAppHandler) as httpd:
+        logger.info(f"🌐 Lead Generation Dashboard active at: http://0.0.0.0:{PORT}")
+        logger.info(f"   🔐 Login Page: http://localhost:{PORT}/login.html")
         logger.info(f"   ⚡ Salesforce Leads: http://localhost:{PORT}/index.html")
         logger.info(f"   🗺️ Local Business Website Leads: http://localhost:{PORT}/website_leads.html")
         logger.info(f"   🇮🇳 India Opportunities: http://localhost:{PORT}/india_leads.html")

@@ -619,7 +619,21 @@
             try {
                 const url = force ? '/api/scan/india?force=true' : '/api/scan/india';
                 const response = await fetch(url, { method: 'POST' });
-                rawLeads = await response.json();
+                if (response.status === 401) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await response.json();
+                if (!Array.isArray(data)) {
+                    if (data && data.error) {
+                        alert('Scanning Error: ' + data.error);
+                    } else {
+                        alert('Unexpected response from server.');
+                    }
+                    rawLeads = [];
+                } else {
+                    rawLeads = data;
+                }
                 applyFilters();
             } catch (err) {
                 alert('Scanning failed: ' + err.message);
@@ -660,7 +674,8 @@
         }
 
         function applyFilters() {
-            if (!rawLeads || rawLeads.length === 0) return;
+            if (!Array.isArray(rawLeads)) rawLeads = [];
+            if (rawLeads.length === 0) return;
 
             const searchTerm = document.getElementById('filter-search').value.toLowerCase().trim();
             const typeFilter = document.getElementById('filter-type').value;

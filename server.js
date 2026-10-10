@@ -15,7 +15,7 @@ const PYTHON_PORT = 8000;
 
 // Ensure python backend (app.py) is running in the background for API routes
 function ensurePythonBackend() {
-    const req = http.get(`http://127.0.0.1:${PYTHON_PORT}/api/scan`, () => {
+    const req = http.get(`http://127.0.0.1:${PYTHON_PORT}/login.html`, () => {
         console.log(`⚡ Python API engine active on port ${PYTHON_PORT}`);
     });
     req.on('error', () => {
@@ -52,12 +52,15 @@ const server = http.createServer((req, res) => {
 
     // Proxy API and Export requests to Python backend on port 8000
     if (urlPath.startsWith('/api/')) {
+        const proxyHeaders = Object.assign({}, req.headers);
+        delete proxyHeaders.host;
+
         const proxyReq = http.request({
             hostname: '127.0.0.1',
             port: PYTHON_PORT,
             path: req.url,
             method: req.method,
-            headers: req.headers
+            headers: proxyHeaders
         }, (proxyRes) => {
             res.writeHead(proxyRes.statusCode, proxyRes.headers);
             proxyRes.pipe(res, { end: true });
